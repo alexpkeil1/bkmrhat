@@ -1,0 +1,15 @@
+Package: bkmrhat
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Alexander Keil [aut, cre]
+Authors@R: 
+    person(given = "Alexander",
+           family = "Keil",
+           role = c("aut", "cre"),
+           email = "akeil@unc.edu")
+Maintainer: None yet
+Description: None yet
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
