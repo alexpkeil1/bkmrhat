@@ -37,6 +37,7 @@ Chains are not combined fully sequentially
 \donttest{
 # following example from https://jenfb.github.io/bkmr/overview.html
 set.seed(111)
+library(bkmr)
 dat <- bkmr::SimData(n = 50, M = 4)
 y <- dat$y
 Z <- dat$Z
@@ -48,7 +49,7 @@ future::plan(strategy = future::multiprocess)
 fitkm.list <- kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000,
   verbose = FALSE, varsel = TRUE)
 bigkm = comb_bkmrfits(fitkm.list)
-ests = bkmr::ExtractEsts(bigkm)
+ests = ExtractEsts(bigkm)
 ExtractPIPs(bigkm)
 pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)
 risks.overall <- OverallRiskSummaries(fit = bigkm, y = y, Z = Z, X = X,
