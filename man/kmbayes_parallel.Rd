@@ -2,7 +2,7 @@
 % Please edit documentation in R/base.R
 \name{kmbayes_parallel}
 \alias{kmbayes_parallel}
-\title{kmbayes_parallel: parallel bkmr}
+\title{Run multiple BKMR chains in parallel}
 \usage{
 kmbayes_parallel(nchains = 4, ...)
 }

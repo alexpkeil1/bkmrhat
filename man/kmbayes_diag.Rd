@@ -2,7 +2,7 @@
 % Please edit documentation in R/base.R
 \name{kmbayes_diag}
 \alias{kmbayes_diag}
-\title{kmbayes_diag: rstan diagnostics}
+\title{MCMC diagnostics using rstan}
 \usage{
 kmbayes_diag(kmobj, ...)
 }

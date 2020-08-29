@@ -2,7 +2,7 @@
 % Please edit documentation in R/base.R
 \name{comb_bkmrfits}
 \alias{comb_bkmrfits}
-\title{comb_bkmrfits: combine fits across multiple chains}
+\title{Combine multiple BKMR chains}
 \usage{
 comb_bkmrfits(fitkm.list, burnin = 0, reorder = TRUE)
 }

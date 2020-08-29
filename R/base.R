@@ -2,8 +2,9 @@
 
 .extractparms <- function(kmobj, allvars=FALSE){
   outlist = list()
-  matlist = c("beta", "lambda", "r")
+  matlist = c("lambda", "r")
   veclist = c("sigsq.eps")
+  if (!is.null(kmobj$X[1])) matlist = c("beta", matlist)
   if (kmobj$est.h) matlist = c("h.hat", matlist)
   if (kmobj$varsel & allvars) matlist = c(matlist, "delta") # rhat useful?
   if(allvars) veclist = c(veclist)
@@ -67,7 +68,7 @@
 #### User visible functions ####
 
 kmbayes_diag <- function(kmobj,...) {
-  #' kmbayes_diag: rstan diagnostics
+  #' MCMC diagnostics using rstan
   #'
   #' @description Give MCMC diagnostistics from the \code{rstan} package
   #' using the \code{\link[rstan]{Rhat}}, \code{\link[rstan]{ess_bulk}},
@@ -109,7 +110,7 @@ kmbayes_diag <- function(kmobj,...) {
 
 
 kmbayes_parallel <- function(nchains=4, ...) {
-  #' kmbayes_parallel: parallel bkmr
+  #' Run multiple BKMR chains in parallel
   #'
   #' @description Fit parallel chains from the \code{\link[bkmr]{kmbayes}} function.
   #' These chains leverage parallel processing from the \code{future} package, which
@@ -144,14 +145,13 @@ kmbayes_parallel <- function(nchains=4, ...) {
       bkmr::kmbayes(...)
     })
   }
-  #res <- future_lapply(ff, FUN = value)
   res <- values(ff)
   class(res) = c("bkmrfit.list", class(res))
   res
 }
 
 comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
-  #' comb_bkmrfits: combine fits across multiple chains
+  #' Combine multiple BKMR chains
   #'
   #' @description Combine multiple chains comprising BKMR fits at different starting
   #' values.
@@ -244,10 +244,14 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
 
 
 as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
-  #' as.mcmc.bkmrfit: convert bkmrfit to mcmc object
+  #' Convert bkmrfit to mcmc object for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit} (from the bkmr package) into
-  #' an \code{\link[coda]{mcmc}} object from the \code{coda} package.
+  #' an \code{\link[coda]{mcmc}} object from the \code{coda} package. The
+  #' \code{coda} package enables many different types of single chain MCMC
+  #' diagnostics, including \code{\link[coda]{geweke.diag}}, \code{\link[coda]{traceplot}} and
+  #' \code{\link[coda]{effectiveSize}}. Posterior summarization is also available,
+  #' such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
   #'
   #' @param kmobj object of type kmrfit (from bkmr package)
   #' @param iterstart first iteration to use (e.g. for implementing burnin)
@@ -287,10 +291,16 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
 
 
 as.mcmc.list.bkmrfit.list <- function(kmobj, ...){
-  #' as.mcmc.list.bkmrfit.list: convert multi-chain bkmrfit to mcmc.list object
+  #' Convert multi-chain bkmrfit to mcmc.list for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit.list} (from the bkmrhat package) into
-  #' an \code{\link[coda]{mcmc.list}} object from the \code{coda} package.
+  #' an \code{\link[coda]{mcmc.list}} object from the \code{coda} package.The
+  #' \code{coda} package enables many different types of MCMC diagnostics,
+  #' including \code{\link[coda]{geweke.diag}}, \code{\link[coda]{traceplot}} and
+  #' \code{\link[coda]{effectiveSize}}. Posterior summarization is also available,
+  #' such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
+  #' Using multiple chains is necessary for certain MCMC diagnostics, such as
+  #' \code{\link[coda]{gelman.diag}}, and \code{\link[coda]{gelman.plot}}.
   #'
   #' @param kmobj object of type kmrfit.list (from bkmrhat package)
   #' @param ... arguments to \code{\link[bkmrhat]{as.mcmc.bkmrfit}}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/base.R
 \name{as.mcmc.bkmrfit}
 \alias{as.mcmc.bkmrfit}
-\title{as.mcmc.bkmrfit: convert bkmrfit to mcmc object}
+\title{Convert bkmrfit to mcmc object for coda MCMC diagnostics}
 \usage{
 \method{as.mcmc}{bkmrfit}(kmobj, iterstart = 1, thin = 1)
 }
@@ -18,7 +18,11 @@ An \code{\link[coda]{mcmc}} object
 }
 \description{
 Converts a \code{kmrfit} (from the bkmr package) into
-an \code{\link[coda]{mcmc}} object from the \code{coda} package.
+an \code{\link[coda]{mcmc}} object from the \code{coda} package. The
+\code{coda} package enables many different types of single chain MCMC
+diagnostics, including \code{\link[coda]{geweke.diag}}, \code{\link[coda]{traceplot}} and
+\code{\link[coda]{effectiveSize}}. Posterior summarization is also available,
+such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
 }
 \examples{
  #' # following example from https://jenfb.github.io/bkmr/overview.html

@@ -2,7 +2,7 @@
 % Please edit documentation in R/base.R
 \name{as.mcmc.list.bkmrfit.list}
 \alias{as.mcmc.list.bkmrfit.list}
-\title{as.mcmc.list.bkmrfit.list: convert multi-chain bkmrfit to mcmc.list object}
+\title{Convert multi-chain bkmrfit to mcmc.list for coda MCMC diagnostics}
 \usage{
 \method{as.mcmc}{list.bkmrfit.list}(kmobj, ...)
 }
@@ -16,7 +16,13 @@ An \code{\link[coda]{mcmc.list}} object
 }
 \description{
 Converts a \code{kmrfit.list} (from the bkmrhat package) into
-an \code{\link[coda]{mcmc.list}} object from the \code{coda} package.
+an \code{\link[coda]{mcmc.list}} object from the \code{coda} package.The
+\code{coda} package enables many different types of MCMC diagnostics,
+including \code{\link[coda]{geweke.diag}}, \code{\link[coda]{traceplot}} and
+\code{\link[coda]{effectiveSize}}. Posterior summarization is also available,
+such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
+Using multiple chains is necessary for certain MCMC diagnostics, such as
+\code{\link[coda]{gelman.diag}}, and \code{\link[coda]{gelman.plot}}.
 }
 \examples{
  #' # following example from https://jenfb.github.io/bkmr/overview.html
