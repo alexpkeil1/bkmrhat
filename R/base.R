@@ -98,12 +98,13 @@ kmbayes_diag <- function(kmobj,...) {
   #'
   if (inherits(kmobj, "bkmrfit.list")){
     message("Parallel chains\n")
-    .diag_par(kmobj)
+    res = .diag_par(kmobj)
   }
   if (inherits(kmobj, "bkmrfit")){
     message("Single chain\n")
-    .diag(kmobj)
+    res = .diag(kmobj)
   }
+  res
 }
 
 
