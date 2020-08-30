@@ -1,65 +1,64 @@
 #### Hidden functions ####
 
-.extractparms <- function(kmobj, allvars=FALSE){
-  outlist = list()
-  matlist = c("lambda", "r")
-  veclist = c("sigsq.eps")
-  if (!all(kmobj$X==0)) matlist = c("beta", matlist)
-  if (kmobj$est.h) matlist = c("h.hat", matlist)
-  if (kmobj$varsel & allvars) matlist = c(matlist, "delta") # rhat useful?
-  if(allvars) veclist = c(veclist)
+.extractparms <- function(kmobj, allvars=FALSE) {
+  outlist <- list()
+  matlist <- c("lambda", "r")
+  veclist <- c("sigsq.eps")
+  if (!all(kmobj$X == 0)) matlist <- c("beta", matlist)
+  if (kmobj$est.h) matlist <- c("h.hat", matlist)
+  if (kmobj$varsel & allvars) matlist <- c(matlist, "delta") # rhat useful?
+  if (allvars) veclist <- c(veclist)
 
-  for (matparm in matlist){
-    width = ncol(kmobj[[matparm]])
-    if(!is.null(width)){
-      outlist[[matparm]] = as.data.frame(as.matrix(kmobj[[matparm]]))
-      names(outlist[[matparm]]) = paste0(matparm, "_", 1:width)
+  for (matparm in matlist) {
+    width <- ncol(kmobj[[matparm]])
+    if (!is.null(width)) {
+      outlist[[matparm]] <- as.data.frame(as.matrix(kmobj[[matparm]]))
+      names(outlist[[matparm]]) <- paste0(matparm, "_", 1:width)
     }
   }
-  for (vecparm in veclist){
-    outlist[[vecparm]] = as.data.frame(as.matrix(kmobj[[vecparm]]))
-    names(outlist[[vecparm]]) = paste0(vecparm)
+  for (vecparm in veclist) {
+    outlist[[vecparm]] <- as.data.frame(as.matrix(kmobj[[vecparm]]))
+    names(outlist[[vecparm]]) <- paste0(vecparm)
   }
-  outdf = as.data.frame(do.call("cbind", outlist))
+  outdf <- as.data.frame(do.call("cbind", outlist))
   outdf
 }
 
-.diag_par <- function(kmobj.list){
+.diag_par <- function(kmobj.list, ...) {
   #' @importFrom rstan Rhat ess_bulk ess_tail
   #'
-  getparmvec <- function(lst, parm){
+  getparmvec <- function(lst, parm) {
     lst[[parm]]
   }
-  odf = lapply(kmobj.list, .extractparms)
-  nms = names(odf[[1]])
-  esstabs_b = sapply(odf, function(x) sapply(x, rstan::ess_bulk))
-  esstabs_t = sapply(odf, function(x) sapply(x, rstan::ess_tail))
-  rhatvec = list()
-  for(nm in nms){
-    nmmat = do.call("cbind", lapply(odf, function(x) getparmvec(x, nm)))
-    rhatvec[[nm]] = rstan::Rhat(nmmat)
+  odf <- lapply(kmobj.list, .extractparms)
+  nms <- names(odf[[1]])
+  arr <- array(NA, c(nrow(odf[[1]]), length(odf), ncol(odf[[1]])))
+  for (ll in seq_len(length(odf))) {
+    arr[, ll, ] <- as.matrix(odf[[ll]])
   }
-  data.frame(ess_bulk = apply(esstabs_b, 1, sum), ess_tail = apply(esstabs_t, 1, sum), rhat = as.numeric(rhatvec))
+  dimnames(arr) <- list(NULL, seq_len(length(odf)), nms)
+  rstan::monitor(arr, ...)
 }
 
-.diag <- function(kmobj){
+.diag <- function(kmobj, ...) {
   #' @importFrom rstan ess_bulk ess_tail
-  odf = .extractparms(kmobj)
-  ess_b = sapply(odf, rstan::ess_bulk)
-  ess_t = sapply(odf, rstan::ess_tail)
-  data.frame(ess_bulk=ess_b, ess_tail=ess_t)
+  odf <- .extractparms(kmobj)
+  arr <- array(NA, c(nrow(odf), 1, ncol(odf)))
+  arr[, 1, ] <- as.matrix(odf)
+  dimnames(arr) <- list(NULL, 1, names(odf))
+  rstan::monitor(arr, ...)
 }
 
-.predictivemean <- function(object, ptype=c("mean", "sd.fit"), ...){
+.predictivemean <- function(object, ptype=c("mean", "sd.fit"), ...) {
   #' @importFrom bkmr SamplePred
   #' @importFrom stats sd
-  sf = bkmr::SamplePred(object, ...)
-  if (ptype[1] == "mean"){
-    meansample = as.numeric(drop(apply(sf, 1, mean)))
+  sf <- bkmr::SamplePred(object, ...)
+  if (ptype[1] == "mean") {
+    meansample <- as.numeric(drop(apply(sf, 1, mean)))
     return(meansample)
   }
-  if (ptype[1] == "sd.fit"){
-    sdsample = as.numeric(drop(apply(sf, 1, sd)))
+  if (ptype[1] == "sd.fit") {
+    sdsample <- as.numeric(drop(apply(sf, 1, sd)))
     return(sdsample)
   }
 }
@@ -67,7 +66,7 @@
 
 #### User visible functions ####
 
-kmbayes_diag <- function(kmobj,...) {
+kmbayes_diag <- function(kmobj, ...) {
   #' MCMC diagnostics using rstan
   #'
   #' @description Give MCMC diagnostistics from the \code{rstan} package
@@ -77,12 +76,12 @@ kmbayes_diag <- function(kmobj,...) {
   #'
   #' @param kmobj Either an object from \code{\link[bkmr]{kmbayes}} or
   #' from \code{\link[bkmrhat]{kmbayes_parallel}}
-  #' @param ... unused
+  #' @param ... arguments to \code{\link[rstan]{monitor}}
   #'
   #' @export
   #'
   #' @examples
-  #' \donttest{
+  #' \dontrun{
   #' set.seed(111)
   #' dat <- bkmr::SimData(n = 50, M = 4)
   #' y <- dat$y
@@ -97,13 +96,13 @@ kmbayes_diag <- function(kmobj,...) {
   #' kmbayes_diag(fitkm.list[[1]]) # just the first chain
   #' }
   #'
-  if (inherits(kmobj, "bkmrfit.list")){
+  if (inherits(kmobj, "bkmrfit.list")) {
     message("Parallel chains\n")
-    res = .diag_par(kmobj)
+    res <- .diag_par(kmobj, ...)
   }
-  if (inherits(kmobj, "bkmrfit")){
+  if (inherits(kmobj, "bkmrfit")) {
     message("Single chain\n")
-    res = .diag(kmobj)
+    res <- .diag(kmobj, ...)
   }
   res
 }
@@ -126,7 +125,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #' @export
   #'
   #' @examples
-  #' \donttest{
+  #' \dontrun{
   #' set.seed(111)
   #' dat <- bkmr::SimData(n = 50, M = 4)
   #' y <- dat$y
@@ -146,7 +145,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
     })
   }
   res <- values(ff)
-  class(res) = c("bkmrfit.list", class(res))
+  class(res) <- c("bkmrfit.list", class(res))
   res
 }
 
@@ -176,7 +175,7 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' @export
   #'
   #' @examples
-  #' \donttest{
+  #' \dontrun{
   #' # following example from https://jenfb.github.io/bkmr/overview.html
   #' set.seed(111)
   #' library(bkmr)
@@ -204,46 +203,43 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #'
   #'
   #'
-  kmoverall = fitkm.list[[1]]
-  nchains = length(fitkm.list)
-  fnm = names(kmoverall)
-  kmN = length(kmoverall$y)
-  kmIter = length(kmoverall$sigsq.eps)
+  kmoverall <- fitkm.list[[1]]
+  nchains <- length(fitkm.list)
+  kmIter <- length(kmoverall$sigsq.eps)
   #c("h.hat", "beta", "lambda", "sigsq.eps", "r", "acc.r", "acc.lambda", "delta",
   # "acc.rdelta", "move.type", "est.h", "time1", "time2", "iter", "family",
   # "starting.values", "control.params", "X", "Z", "y", "ztest", "data.comps", "varsel")
-  # names(kmoverall)
-  chainspecific = c("starting.values")
-  kmoverall$chain = rep(1:nchains, each=kmIter)
-  kmoverall$iters = rep(1:kmIter, times=nchains)
-  autoburn = which(kmoverall$iters <= ceiling(kmIter/2))
-  autonotburn = which(kmoverall$iters > ceiling(kmIter/2))
-  getparm <- function(lst, parm){
+  kmoverall$chain <- rep(1:nchains, each=kmIter)
+  kmoverall$iters <- rep(1:kmIter, times=nchains)
+  autoburn <- which(kmoverall$iters <= ceiling(kmIter/2))
+  autonotburn <- which(kmoverall$iters > ceiling(kmIter/2))
+  getparm <- function(lst, parm) {
     lst[[parm]]
   }
-  getparmmat <- function(lst, parm){
-    lst[[parm]][(burnin+1):kmIter,,drop=FALSE]
+  getparmmat <- function(lst, parm) {
+    lst[[parm]][(burnin+1):kmIter, , drop=FALSE]
   }
-  getparmvec <- function(lst, parm){
+  getparmvec <- function(lst, parm) {
     lst[[parm]][(burnin+1):kmIter]
   }
-  for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta")){
-    tmp = do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
-    kmoverall[[matparm]] = rbind(tmp[autoburn,,drop=FALSE], tmp[autonotburn,,drop=FALSE])
+  for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta")) {
+    tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
+    kmoverall[[matparm]] <- rbind(tmp[autoburn, , drop=FALSE],
+                                  tmp[autonotburn, , drop=FALSE])
   }
-  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")){
-    temp = do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
-    kmoverall[[vecparm]] = c(tmp[autoburn], tmp[autonotburn])
+  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
+    tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
+    kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
   }
-  for (sumparm in c("iter")){
-    kmoverall[[sumparm]] = do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
+  for (sumparm in c("iter")) {
+    kmoverall[[sumparm]] <- do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
   }
-  class(kmoverall) = c("bkmrplusfit", class(kmoverall))
+  class(kmoverall) <- c("bkmrplusfit", class(kmoverall))
   kmoverall
 }
 
 
-as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
+as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1) {
   #' Convert bkmrfit to mcmc object for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit} (from the bkmr package) into
@@ -262,8 +258,9 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
   #' @export
   #'
   #' @examples
-  #'  #' # following example from https://jenfb.github.io/bkmr/overview.html
-  #'  \donttest{
+  #'
+  #' # following example from https://jenfb.github.io/bkmr/overview.html
+  #'  \dontrun{
   #' set.seed(111)
   #' library(coda)
   #' library(bkmr)
@@ -272,8 +269,9 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE, varsel = FALSE)
-  #' mcmcobj = as.mcmc(fitkm, iterstart=2501)
+  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+  #'   varsel = FALSE)
+  #' mcmcobj <- as.mcmc(fitkm, iterstart=2501)
   #' summary(mcmcobj) # posterior summaries of model parameters
   #' # compare with default from bkmr package, which omits first 1/2 of chain
   #' summary(fitkm)
@@ -284,13 +282,13 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1){
   #' # will also fail with delta functions (when using variable selection)
   #' try(geweke.plot(mcmcobj))
   #' }
-  df = .extractparms(kmobj, allvars = TRUE)
-  nr = nrow(df)
-  mcmc(df[seq(iterstart, nr, by=thin),], start=iterstart, thin=thin)
+  df <- .extractparms(kmobj, allvars = TRUE)
+  nr <- nrow(df)
+  mcmc(df[seq(iterstart, nr, by=thin), ], start=iterstart, thin=thin)
 }
 
 
-as.mcmc.list.bkmrfit.list <- function(kmobj, ...){
+as.mcmc.list.bkmrfit.list <- function(kmobj, ...) {
   #' Convert multi-chain bkmrfit to mcmc.list for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit.list} (from the bkmrhat package) into
@@ -310,8 +308,8 @@ as.mcmc.list.bkmrfit.list <- function(kmobj, ...){
   #' @export
   #'
   #' @examples
-  #'  #' # following example from https://jenfb.github.io/bkmr/overview.html
-  #'  \donttest{
+  #' # following example from https://jenfb.github.io/bkmr/overview.html
+  #'  \dontrun{
   #' set.seed(111)
   #' library(coda)
   #' dat <- bkmr::SimData(n = 50, M = 4)
@@ -336,12 +334,12 @@ as.mcmc.list.bkmrfit.list <- function(kmobj, ...){
   #' try(gelman.plot(mcmcobj))
   #' try(geweke.plot(mcmcobj))
   #' }
-  res = lapply(kmobj, as.mcmc.bkmrfit, ...)
+  res <- lapply(kmobj, as.mcmc.bkmrfit, ...)
   mcmc.list(res)
 }
 
 
-predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...){
+predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...) {
   #' predict.bkmrfit: posterior mean/sd predictions
   #'
   #' @description Provides observation level predictions based on the posterior mean, or, alternatively, yields the posterior standard deviations of predictions for an observation. This function is useful for interfacing with ensemble machine learning packages such as `SuperLearner`, which utilize only point estimates.
@@ -360,7 +358,7 @@ predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...){
   #'
   #' @examples
   #' # following example from https://jenfb.github.io/bkmr/overview.html
-  #' \donttest{
+  #' \dontrun{
   #' library(bkmr)
   #' set.seed(111)
   #' dat <- bkmr::SimData(n = 50, M = 4)
@@ -375,14 +373,13 @@ predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...){
   #' # mean difference in posterior means
   #' mean(postmean-postmean2)
   #' }
-  sf = bkmr::SamplePred(object, ...)
-  if (ptype[1] == "mean"){
-    postmean = as.numeric(drop(apply(sf, 2, mean)))
+  sf <- bkmr::SamplePred(object, ...)
+  if (ptype[1] == "mean") {
+    postmean <- as.numeric(drop(apply(sf, 2, mean)))
     return(postmean)
   }
-  if (ptype[1] == "sd.fit"){
-    postsd = as.numeric(drop(apply(sf, 2, sd)))
+  if (ptype[1] == "sd.fit") {
+    postsd <- as.numeric(drop(apply(sf, 2, sd)))
     return(postsd)
   }
 }
-

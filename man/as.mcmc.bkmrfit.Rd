@@ -25,7 +25,8 @@ diagnostics, including \code{\link[coda]{geweke.diag}}, \code{\link[coda]{tracep
 such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
 }
 \examples{
- #' # following example from https://jenfb.github.io/bkmr/overview.html
+
+# following example from https://jenfb.github.io/bkmr/overview.html
  \donttest{
 set.seed(111)
 library(coda)
@@ -35,8 +36,9 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 set.seed(111)
-fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE, varsel = FALSE)
-mcmcobj = as.mcmc(fitkm, iterstart=2501)
+fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+  varsel = FALSE)
+mcmcobj <- as.mcmc(fitkm, iterstart=2501)
 summary(mcmcobj) # posterior summaries of model parameters
 # compare with default from bkmr package, which omits first 1/2 of chain
 summary(fitkm)

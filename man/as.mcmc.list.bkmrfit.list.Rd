@@ -25,7 +25,7 @@ Using multiple chains is necessary for certain MCMC diagnostics, such as
 \code{\link[coda]{gelman.diag}}, and \code{\link[coda]{gelman.plot}}.
 }
 \examples{
- #' # following example from https://jenfb.github.io/bkmr/overview.html
+# following example from https://jenfb.github.io/bkmr/overview.html
  \donttest{
 set.seed(111)
 library(coda)

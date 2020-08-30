@@ -10,7 +10,7 @@ kmbayes_diag(kmobj, ...)
 \item{kmobj}{Either an object from \code{\link[bkmr]{kmbayes}} or
 from \code{\link[bkmrhat]{kmbayes_parallel}}}
 
-\item{...}{unused}
+\item{...}{arguments to \code{\link[rstan]{monitor}}}
 }
 \description{
 Give MCMC diagnostistics from the \code{rstan} package

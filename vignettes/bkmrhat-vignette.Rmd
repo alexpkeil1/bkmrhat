@@ -38,7 +38,7 @@ head(cbind(y,Z,X))
 ### Example 1: single vs multi-chains
 There is some overhead in parallel processing when using the `future` package, so the payoff when using parallel processing may vary by the problem. Here it is about a 2-4x speedup, but you can see more benefit at higher iterations. Note that this may not yield as many usable iterations as a single large chain if a substantial burnin period is needed, but it will enable useful convergence diagnostics. Note that the future package can implement sequential processing, which effectively turns the kmbayes_parallel into a loop, but still has all other advantages of multiple chains. 
 
-```{r single vs multi-chains, results='markup', cache=TRUE}
+```{r 1 vs 1+ chains, cache=FALSE, results='markup'}
 
 # enable parallel processing
 future::plan(strategy = future::multiprocess)
@@ -56,13 +56,17 @@ system.time(kmfit5 <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z,
 
 
 ### Example 2: Diagnostics
+
+The diagnostics from the rstan package come from the `monitor` function (see the help files for that function in the rstan pacakge)
 ```{r diagnostics 1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
-# Using rstan functions
-kmbayes_diag(kmfit)
+# Using rstan functions (set burnin/warmup to zero for comparability with coda numbers given later
+#  posterior summaries should be performed after excluding warmup/burnin)
+singlediag = kmbayes_diag(kmfit, warmup=0, digits_summary=2)
+
 
 # Using rstan functions (multiple chains enable R-hat)
-kmbayes_diag(kmfit5)
+kmbayes_diag(kmfit5, warmup=0, digits_summary=2)
 
 # using coda functions, not using any burnin (for demonstration only)
 kmfitcoda = as.mcmc(kmfit, iterstart = 1)
