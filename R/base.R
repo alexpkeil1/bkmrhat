@@ -4,7 +4,7 @@
   outlist = list()
   matlist = c("lambda", "r")
   veclist = c("sigsq.eps")
-  if (!is.null(kmobj$X[1])) matlist = c("beta", matlist)
+  if (!all(kmobj$X==0)) matlist = c("beta", matlist)
   if (kmobj$est.h) matlist = c("h.hat", matlist)
   if (kmobj$varsel & allvars) matlist = c(matlist, "delta") # rhat useful?
   if(allvars) veclist = c(veclist)

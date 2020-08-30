@@ -1,0 +1,178 @@
+---
+title: "The bkmrhat package: diagnostics and multi-chain inference in Bayesian kernel machine regression"
+author: "Alexander Keil"
+date: "`r Sys.Date()`"
+#output: rmarkdown::pdf_document 
+output: rmarkdown::html_vignette  
+vignette: >
+  %\VignetteIndexEntry{The bkmrhat package: inference and diagnostics examples}
+  %\VignetteEngine{knitr::knitr}
+  \usepackage[utf8]{inputenc}
+---
+
+## Introduction to `bkmr` and `bkmrhat`
+`bkmr` is a package to implement Bayesian kernel machine regression (BKMR) using Markov chain Monte Carlo (MCMC). Notably, `bkmr` is missing some key features in Bayesian inference and MCMC diagnostics: 1) no facility for running multiple chains in parallel 2) no inference across multiple chains 3) limited posterior summary of parameters 4) limited diagnostics. The `bkmrhat` package is a lightweight set of function that fills in each of those gaps by enabling post-processing of `bkmr` output in other packages and building a small framework for parallel processing.
+
+## How to use the `bkmrhat` package
+1. Fit a BKMR model for a single chain using the `kmbaryes` function from `bkmr`, or use multiple parallel chains `kmbayes_parallel` from `bkmrhat`
+2. Perform diagnostics on single or multiple chains using the `kmbayes_diag` function (uses functions from the `rstan` package) OR convert the BKMR fit(s) to `mcmc` (one chain) or `mcmc.list` (multiple chains) objects from the `coda` package using `as.mcmc` or `as.mcmc.list` from the `bkmrhat` package. The `coda` package has a whole host of inference and diagnostic procedures (but may lag behind some of the diagnostics functions from `rstan`).
+3. Perform posterior summaries using `coda` functions or combine chains from a `kmbayes_parallel` fit using `comb_bkmrfits`. Final posterior inferences can be made on the combined object, which enables use of `bkmr` package functions for visual summaries of independent and joint effects of exposures in the `bkmr` model.
+
+First, simulate some data from the `bkmr` function
+```{r metals data, echo=TRUE, results='markup', message=FALSE}
+library("bkmr")
+library("bkmrhat")
+library("coda")
+library("ggplot2")
+Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet") # for future package
+
+set.seed(111)
+dat <- bkmr::SimData(n = 50, M = 4)
+y <- dat$y
+Z <- dat$Z
+X <- dat$X   
+head(cbind(y,Z,X))
+```
+
+
+### Example 1: single vs multi-chains
+There is some overhead in parallel processing when using the `future` package, so the payoff when using parallel processing may vary by the problem. Here it is about a 2-4x speedup, but you can see more benefit at higher iterations. Note that this may not yield as many usable iterations as a single large chain if a substantial burnin period is needed, but it will enable useful convergence diagnostics. Note that the future package can implement sequential processing, which effectively turns the kmbayes_parallel into a loop, but still has all other advantages of multiple chains. 
+
+```{r single vs multi-chains, results='markup', cache=TRUE}
+
+# enable parallel processing
+future::plan(strategy = future::multiprocess)
+
+# single run of 4000 observations
+set.seed(111)
+system.time(kmfit <- suppressMessages(kmbayes(y = y, Z = Z, X = X, iter = 4000, verbose = FALSE, varsel = FALSE)))
+
+
+# 4 runs of 1000 observations
+set.seed(111)
+system.time(kmfit5 <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = FALSE)))
+
+```
+
+
+### Example 2: Diagnostics
+```{r diagnostics 1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# Using rstan functions
+kmbayes_diag(kmfit)
+
+# Using rstan functions (multiple chains enable R-hat)
+kmbayes_diag(kmfit5)
+
+# using coda functions, not using any burnin (for demonstration only)
+kmfitcoda = as.mcmc(kmfit, iterstart = 1)
+kmfit5coda = as.mcmc.list(kmfit5, iterstart = 1)
+
+# single chain trace plot
+traceplot(kmfitcoda)
+```
+The trace plots look typical, and fine, but trace plots don't give a full picture of convergence. Note that there is apparent quick convergence for a couple of parameters demonstrated by movement away from the starting value and concentration of the rest of the samples within a narrow band.
+
+Seeing visual evidence that different chains are sampling from the same marginal distributions is reassuring about the stability of the results.
+```{r diagnostics 2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# multiple chain trace plot
+traceplot(kmfit5coda)
+```
+
+
+Trace plots can be limited, and are sometimes difficult to use effectively with scale parameters (of which `bkmr` has many). Thus, more formal diagnostics are helpful.
+
+Gelman's r-hat diagnostic gives an interpretable diagnostic: the expected reduction in the standard error of the posterior means if you could run the chains to an infinite size. These give some idea about when is a fine idea to start sampling. There are rules of thumb about using r-hat to stop sampling that are available from several authors (for example you can consult the help files for `rstan` and `coda`).
+
+Effective sample size is also useful - it estimates the amount of information in your chain, expressed in terms of the number of independent posterior samples it would take to match that information (e.g. if we could just sample from the posterior directly).
+```{r diagnostics 3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# Gelman's r-hat using coda estimator (will differ from rstan implementation)
+gelman.diag(kmfit5coda)
+# effective sample size
+effectiveSize(kmfitcoda)
+effectiveSize(kmfit5coda)
+```
+
+
+
+
+
+
+### Example 3: Posterior summaries
+Posterior kernel marginal densities, 1 chain
+```{r post summaries 1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+# posterior kernel marginal densities using `mcmc` and `mcmc` objects
+densplot(kmfitcoda)
+```
+
+Posterior kernel marginal densities, multiple chains combined. Look for multiple modes that may indicate non-convergence of some chains
+```{r post summaries 2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+# posterior kernel marginal densities using `mcmc` and `mcmc` objects
+densplot(kmfit5coda)
+```
+
+
+
+Other diagnostics from the `coda` package are available here.
+
+Finally, the chains from the original `kmbayes_parallel` fit can be combined into a single chain (see the help files for how to deal with burn-in, the default in `bkmr` is to use the first half of the chain, which is respected here). The `comb_bkmrfits` function smartly first combines the burn-in iterations and then combines the iterations after burnin, such that the burn-in rules of subsequent functions within the `bkmr` package are respected. Note that unlike the `as.mcmc.list` function, this function combines all iterations into a single chain, so trace plots will not be good diagnotistics in this combined object, and it should be used once one is assured that all chains have converged and the burn-in is acceptable.
+
+With this combined set of samples, you can follow any of the post-processing functions from the `bkmr` functions, which are described here: https://jenfb.github.io/bkmr/overview.html. For example, see below the estimation of the posterior mean difference along a series of quantiles of all exposures in Z.
+
+```{r post summaries 3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# posterior summaries using `mcmc` and `mcmc` objects
+summary(kmfitcoda)
+summary(kmfit5coda)
+
+# highest posterior density intervals using `mcmc` and `mcmc` objects
+HPDinterval(kmfitcoda)
+HPDinterval(kmfit5coda)
+
+# combine multiple chains into a single chain
+fitkmccomb = comb_bkmrfits(kmfit5)
+
+
+# For example:
+summary(fitkmccomb)
+
+
+mean.difference <- OverallRiskSummaries(fit = fitkmccomb, y = y, Z = Z, X = X, 
+                                      qs = seq(0.25, 0.75, by = 0.05), 
+                                      q.fixed = 0.5, method = "exact")
+mean.difference
+
+ggplot(mean.difference, aes(quantile, est, ymin = est - 1.96*sd, ymax = est + 1.96*sd)) + 
+  geom_pointrange() + 
+  theme_classic()
+```
+
+# Example 4: diagnostics and inference when variable selection is used (Bayesian model averaging over the scale parameters of the kernel function)
+
+These results parallel previous session and are given here without comment, other than to note that no fixed effects (X variables) are included, and that it is useful to check the posterior inclusion probabilities to ensure they are similar across chains.
+```{r varsel, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+set.seed(111)
+system.time(kmfitbma.list <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z, X = NULL, iter = 1000, verbose = FALSE, varsel = TRUE)))
+
+kmbayes_diag(kmfitbma.list)
+
+# posterior exclusion probability of each chain
+lapply(kmfitbma.list, function(x) t(ExtractPIPs(x)))
+
+
+kmfitbma.comb = comb_bkmrfits(kmfitbma.list)
+summary(kmfitbma.comb)
+ExtractPIPs(kmfitbma.comb) # posterior inclusion probabilities
+
+mean.difference2 <- OverallRiskSummaries(fit = kmfitbma.comb, y = y, Z = Z, X =NULL,                                       qs = seq(0.25, 0.75, by = 0.05), 
+                                      q.fixed = 0.5, method = "exact")
+mean.difference2
+
+ggplot(mean.difference2, aes(quantile, est, ymin = est - 1.96*sd, ymax = est + 1.96*sd)) + 
+  geom_pointrange() + 
+  theme_classic()
+
+```
