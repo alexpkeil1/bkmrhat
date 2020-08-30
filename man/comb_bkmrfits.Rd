@@ -34,7 +34,7 @@ values.
 Chains are not combined fully sequentially
 }
 \examples{
-\donttest{
+\dontrun{
 # following example from https://jenfb.github.io/bkmr/overview.html
 set.seed(111)
 library(bkmr)

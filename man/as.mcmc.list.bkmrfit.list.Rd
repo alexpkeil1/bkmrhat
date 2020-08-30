@@ -26,7 +26,7 @@ Using multiple chains is necessary for certain MCMC diagnostics, such as
 }
 \examples{
 # following example from https://jenfb.github.io/bkmr/overview.html
- \donttest{
+ \dontrun{
 set.seed(111)
 library(coda)
 dat <- bkmr::SimData(n = 50, M = 4)

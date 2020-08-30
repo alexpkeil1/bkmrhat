@@ -19,7 +19,7 @@ and \code{\link[rstan]{ess_tail}} functions. Note that r-hat is only
 reported for \code{bkmrfit.list} objects from \code{\link[bkmrhat]{kmbayes_parallel}}
 }
 \examples{
-\donttest{
+\dontrun{
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 4)
 y <- dat$y

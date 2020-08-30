@@ -21,7 +21,7 @@ can speed fitting and enable diagnostics that rely on multiple Markov
 chains from dispersed initial values.
 }
 \examples{
-\donttest{
+\dontrun{
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 4)
 y <- dat$y

@@ -66,7 +66,7 @@ singlediag = kmbayes_diag(kmfit, warmup=0, digits_summary=2)
 
 
 # Using rstan functions (multiple chains enable R-hat)
-kmbayes_diag(kmfit5, warmup=0, digits_summary=2)
+multidiag = kmbayes_diag(kmfit5, warmup=0, digits_summary=2)
 
 # using coda functions, not using any burnin (for demonstration only)
 kmfitcoda = as.mcmc(kmfit, iterstart = 1)
@@ -161,7 +161,7 @@ These results parallel previous session and are given here without comment, othe
 set.seed(111)
 system.time(kmfitbma.list <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z, X = NULL, iter = 1000, verbose = FALSE, varsel = TRUE)))
 
-kmbayes_diag(kmfitbma.list)
+bmadiag = kmbayes_diag(kmfitbma.list)
 
 # posterior exclusion probability of each chain
 lapply(kmfitbma.list, function(x) t(ExtractPIPs(x)))

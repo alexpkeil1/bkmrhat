@@ -24,7 +24,7 @@ Provides observation level predictions based on the posterior mean, or, alternat
 }
 \examples{
 # following example from https://jenfb.github.io/bkmr/overview.html
-\donttest{
+\dontrun{
 library(bkmr)
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 4)

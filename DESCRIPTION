@@ -2,7 +2,7 @@ Package: bkmrhat
 Title: Diagnostics and Multi-Chain Tools with Bayesian Kernel
     Machine Regression (BKMR)
 Version: 0.1.4
-Date: 2020-08-29
+Date: 2020-08-30
 Authors@R: 
     person(given = "Alexander",
            family = "Keil",

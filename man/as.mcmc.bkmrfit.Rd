@@ -27,7 +27,7 @@ such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
 \examples{
 
 # following example from https://jenfb.github.io/bkmr/overview.html
- \donttest{
+ \dontrun{
 set.seed(111)
 library(coda)
 library(bkmr)

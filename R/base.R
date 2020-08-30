@@ -340,7 +340,7 @@ as.mcmc.list.bkmrfit.list <- function(kmobj, ...) {
 
 
 predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...) {
-  #' predict.bkmrfit: posterior mean/sd predictions
+  #' Posterior mean/sd predictions
   #'
   #' @description Provides observation level predictions based on the posterior mean, or, alternatively, yields the posterior standard deviations of predictions for an observation. This function is useful for interfacing with ensemble machine learning packages such as `SuperLearner`, which utilize only point estimates.
   #'
