@@ -1,8 +1,8 @@
 Package: bkmrhat
 Title: Diagnostics and Multi-Chain Tools with Bayesian Kernel
     Machine Regression (BKMR)
-Version: 0.1.4
-Date: 2020-08-30
+Version: 0.1.6
+Date: 2020-08-31
 Authors@R: 
     person(given = "Alexander",
            family = "Keil",
@@ -18,10 +18,10 @@ Description: Bayesian kernel machine regression (from the bkmr
     from the future, rstan and coda packages.
 License: GPL (>= 3)
 Depends: 
+    coda,
     R (>= 3.5.0)
 Imports: 
     bkmr,
-    coda,
     future,
     rstan
 Suggests: 

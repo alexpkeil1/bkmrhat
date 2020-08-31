@@ -23,7 +23,6 @@ First, simulate some data from the `bkmr` function
 library("bkmr")
 library("bkmrhat")
 library("coda")
-library("ggplot2")
 Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet") # for future package
 
 set.seed(111)
@@ -148,9 +147,15 @@ mean.difference <- OverallRiskSummaries(fit = fitkmccomb, y = y, Z = Z, X = X,
                                       q.fixed = 0.5, method = "exact")
 mean.difference
 
-ggplot(mean.difference, aes(quantile, est, ymin = est - 1.96*sd, ymax = est + 1.96*sd)) + 
-  geom_pointrange() + 
-  theme_classic()
+with(mean.difference, {
+  plot(quantile, est, pch=19, ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
+       axes=FALSE, ylab= "Mean difference", xlab = "Joint quantile")
+  segments(x0=quantile, x1=quantile, y0 = est - 1.96*sd, y1 = est + 1.96*sd)
+  abline(h=0)
+  axis(1)
+  axis(2)
+  box(bty='l')
+})
 ```
 
 # Example 4: diagnostics and inference when variable selection is used (Bayesian model averaging over the scale parameters of the kernel function)
@@ -175,8 +180,14 @@ mean.difference2 <- OverallRiskSummaries(fit = kmfitbma.comb, y = y, Z = Z, X =N
                                       q.fixed = 0.5, method = "exact")
 mean.difference2
 
-ggplot(mean.difference2, aes(quantile, est, ymin = est - 1.96*sd, ymax = est + 1.96*sd)) + 
-  geom_pointrange() + 
-  theme_classic()
+with(mean.difference2, {
+  plot(quantile, est, pch=19, ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
+       axes=FALSE, ylab= "Mean difference", xlab = "Joint quantile")
+  segments(x0=quantile, x1=quantile, y0 = est - 1.96*sd, y1 = est + 1.96*sd)
+  abline(h=0)
+  axis(1)
+  axis(2)
+  box(bty='l')
+})
 
 ```

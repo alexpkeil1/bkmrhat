@@ -1,0 +1,64 @@
+#### Hidden functions ####
+
+.extractparms <- function(kmobj, allvars=FALSE) {
+  outlist <- list()
+  matlist <- c("lambda", "r")
+  veclist <- c("sigsq.eps")
+  if (!all(kmobj$X == 0)) matlist <- c("beta", matlist)
+  if (kmobj$est.h) matlist <- c("h.hat", matlist)
+  if (kmobj$varsel & allvars) matlist <- c(matlist, "delta") # rhat useful?
+  if (allvars) veclist <- c(veclist)
+
+  for (matparm in matlist) {
+    width <- ncol(kmobj[[matparm]])
+    if (!is.null(width)) {
+      outlist[[matparm]] <- as.data.frame(as.matrix(kmobj[[matparm]]))
+      names(outlist[[matparm]]) <- paste0(matparm, "_", 1:width)
+    }
+  }
+  for (vecparm in veclist) {
+    outlist[[vecparm]] <- as.data.frame(as.matrix(kmobj[[vecparm]]))
+    names(outlist[[vecparm]]) <- paste0(vecparm)
+  }
+  outdf <- as.data.frame(do.call("cbind", outlist))
+  outdf
+}
+
+.diag_par <- function(kmobj.list, ...) {
+  #' @importFrom rstan Rhat ess_bulk ess_tail
+  #'
+  getparmvec <- function(lst, parm) {
+    lst[[parm]]
+  }
+  odf <- lapply(kmobj.list, .extractparms)
+  nms <- names(odf[[1]])
+  arr <- array(NA, c(nrow(odf[[1]]), length(odf), ncol(odf[[1]])))
+  for (ll in seq_len(length(odf))) {
+    arr[, ll, ] <- as.matrix(odf[[ll]])
+  }
+  dimnames(arr) <- list(NULL, seq_len(length(odf)), nms)
+  rstan::monitor(arr, ...)
+}
+
+.diag <- function(kmobj, ...) {
+  #' @importFrom rstan ess_bulk ess_tail
+  odf <- .extractparms(kmobj)
+  arr <- array(NA, c(nrow(odf), 1, ncol(odf)))
+  arr[, 1, ] <- as.matrix(odf)
+  dimnames(arr) <- list(NULL, 1, names(odf))
+  rstan::monitor(arr, ...)
+}
+
+.predictivemean <- function(object, ptype=c("mean", "sd.fit"), ...) {
+  #' @importFrom bkmr SamplePred
+  #' @importFrom stats sd
+  sf <- bkmr::SamplePred(object, ...)
+  if (ptype[1] == "mean") {
+    meansample <- as.numeric(drop(apply(sf, 1, mean)))
+    return(meansample)
+  }
+  if (ptype[1] == "sd.fit") {
+    sdsample <- as.numeric(drop(apply(sf, 1, sd)))
+    return(sdsample)
+  }
+}
