@@ -4,10 +4,10 @@
 \alias{as.mcmc.list.bkmrfit.list}
 \title{Convert multi-chain bkmrfit to mcmc.list for coda MCMC diagnostics}
 \usage{
-\method{as.mcmc}{list.bkmrfit.list}(kmobj, ...)
+\method{as.mcmc}{list.bkmrfit.list}(x, ...)
 }
 \arguments{
-\item{kmobj}{object of type kmrfit.list (from bkmrhat package)}
+\item{x}{object of type kmrfit.list (from bkmrhat package)}
 
 \item{...}{arguments to \code{\link[bkmrhat]{as.mcmc.bkmrfit}}}
 }

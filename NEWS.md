@@ -1,4 +1,4 @@
-# `bkmrhat` v0.1.0
+# `bkmrhat` v0.1.6
 
 ## Major changes
 - First CRAN release

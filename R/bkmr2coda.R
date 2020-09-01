@@ -1,6 +1,6 @@
 #### Interfaces with coda package ####
 
-as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1) {
+as.mcmc.bkmrfit <- function(x, iterstart=1, thin=1, ...) {
   #' Convert bkmrfit to mcmc object for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit} (from the bkmr package) into
@@ -10,9 +10,10 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1) {
   #' \code{\link[coda]{effectiveSize}}. Posterior summarization is also available,
   #' such as \code{\link[coda]{HPDinterval}} and \code{\link[coda]{summary.mcmc}}.
   #'
-  #' @param kmobj object of type kmrfit (from bkmr package)
+  #' @param x object of type kmrfit (from bkmr package)
   #' @param iterstart first iteration to use (e.g. for implementing burnin)
   #' @param thin keep 1/thin % of the total iterations (at regular intervals)
+  #' @param ... unused
   #'
   #' @return An \code{\link[coda]{mcmc}} object
   #' @importFrom coda mcmc as.mcmc
@@ -44,13 +45,13 @@ as.mcmc.bkmrfit <- function(kmobj, iterstart=1, thin=1) {
   #' try(geweke.plot(mcmcobj))
   #' }
   requireNamespace("coda")
-  df <- .extractparms(kmobj, allvars = TRUE)
+  df <- .extractparms(x, allvars = TRUE)
   nr <- nrow(df)
   mcmc(df[seq(iterstart, nr, by=thin), ], start=iterstart, thin=thin)
 }
 
 
-as.mcmc.list.bkmrfit.list <- function(kmobj, ...) {
+as.mcmc.list.bkmrfit.list <- function(x, ...) {
   #' Convert multi-chain bkmrfit to mcmc.list for coda MCMC diagnostics
   #'
   #' @description Converts a \code{kmrfit.list} (from the bkmrhat package) into
@@ -62,11 +63,11 @@ as.mcmc.list.bkmrfit.list <- function(kmobj, ...) {
   #' Using multiple chains is necessary for certain MCMC diagnostics, such as
   #' \code{\link[coda]{gelman.diag}}, and \code{\link[coda]{gelman.plot}}.
   #'
-  #' @param kmobj object of type kmrfit.list (from bkmrhat package)
+  #' @param x object of type kmrfit.list (from bkmrhat package)
   #' @param ... arguments to \code{\link[bkmrhat]{as.mcmc.bkmrfit}}
   #'
   #' @return An \code{\link[coda]{mcmc.list}} object
-  #' @importFrom coda mcmc.list as.mcmc.list 
+  #' @importFrom coda mcmc.list as.mcmc.list
   #' @export
   #'
   #' @examples
@@ -97,8 +98,7 @@ as.mcmc.list.bkmrfit.list <- function(kmobj, ...) {
   #' try(geweke.plot(mcmcobj))
   #' }
   requireNamespace("coda")
-  res <- lapply(kmobj, as.mcmc.bkmrfit, ...)
-  res <- lapply(kmobj, as.mcmc.bkmrfit, ...)
+  res <- lapply(x, as.mcmc.bkmrfit, ...)
   mcmc.list(res)
 }
 

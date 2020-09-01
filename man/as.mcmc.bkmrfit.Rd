@@ -4,14 +4,16 @@
 \alias{as.mcmc.bkmrfit}
 \title{Convert bkmrfit to mcmc object for coda MCMC diagnostics}
 \usage{
-\method{as.mcmc}{bkmrfit}(kmobj, iterstart = 1, thin = 1)
+\method{as.mcmc}{bkmrfit}(x, iterstart = 1, thin = 1, ...)
 }
 \arguments{
-\item{kmobj}{object of type kmrfit (from bkmr package)}
+\item{x}{object of type kmrfit (from bkmr package)}
 
 \item{iterstart}{first iteration to use (e.g. for implementing burnin)}
 
 \item{thin}{keep 1/thin \% of the total iterations (at regular intervals)}
+
+\item{...}{unused}
 }
 \value{
 An \code{\link[coda]{mcmc}} object
