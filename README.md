@@ -1,4 +1,4 @@
-`bkmrhat` v0.1.6
+`bkmrhat` v0.1.7
 
 Diagnostics and multi-chain tools with Bayesian kernel machine regression (bkmr)
 
