@@ -26,10 +26,10 @@ library("coda")
 Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet") # for future package
 
 set.seed(111)
-dat <- bkmr::SimData(n = 50, M = 4)
+dat <- bkmr::SimData(n = 50, M = 5, ind=1:3, Zgen="realistic")
 y <- dat$y
 Z <- dat$Z
-X <- dat$X   
+X <- cbind(dat$X, rnorm(50))
 head(cbind(y,Z,X))
 ```
 
@@ -42,12 +42,12 @@ There is some overhead in parallel processing when using the `future` package, s
 # enable parallel processing
 future::plan(strategy = future::multiprocess)
 
-# single run of 4000 observations
+# single run of 4000 observations from bkmr package
 set.seed(111)
 system.time(kmfit <- suppressMessages(kmbayes(y = y, Z = Z, X = X, iter = 4000, verbose = FALSE, varsel = FALSE)))
 
 
-# 4 runs of 1000 observations
+# 4 runs of 1000 observations from bkmrhat package
 set.seed(111)
 system.time(kmfit5 <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = FALSE)))
 
@@ -86,7 +86,7 @@ traceplot(kmfit5coda)
 
 Trace plots can be limited, and are sometimes difficult to use effectively with scale parameters (of which `bkmr` has many). Thus, more formal diagnostics are helpful.
 
-Gelman's r-hat diagnostic gives an interpretable diagnostic: the expected reduction in the standard error of the posterior means if you could run the chains to an infinite size. These give some idea about when is a fine idea to start sampling. There are rules of thumb about using r-hat to stop sampling that are available from several authors (for example you can consult the help files for `rstan` and `coda`).
+Gelman's r-hat diagnostic gives an interpretable diagnostic: the expected reduction in the standard error of the posterior means if you could run the chains to an infinite size. These give some idea about when is a fine idea to stop sampling. There are rules of thumb about using r-hat to stop sampling that are available from several authors (for example you can consult the help files for `rstan` and `coda`).
 
 Effective sample size is also useful - it estimates the amount of information in your chain, expressed in terms of the number of independent posterior samples it would take to match that information (e.g. if we could just sample from the posterior directly).
 ```{r diagnostics 3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
@@ -142,9 +142,9 @@ fitkmccomb = comb_bkmrfits(kmfit5)
 summary(fitkmccomb)
 
 
-mean.difference <- OverallRiskSummaries(fit = fitkmccomb, y = y, Z = Z, X = X, 
+mean.difference <- suppressWarnings(OverallRiskSummaries(fit = fitkmccomb, y = y, Z = Z, X = X, 
                                       qs = seq(0.25, 0.75, by = 0.05), 
-                                      q.fixed = 0.5, method = "exact")
+                                      q.fixed = 0.5, method = "exact"))
 mean.difference
 
 with(mean.difference, {
@@ -164,7 +164,7 @@ These results parallel previous session and are given here without comment, othe
 ```{r varsel, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 set.seed(111)
-system.time(kmfitbma.list <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z, X = NULL, iter = 1000, verbose = FALSE, varsel = TRUE)))
+system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
 
 bmadiag = kmbayes_diag(kmfitbma.list)
 
@@ -176,8 +176,8 @@ kmfitbma.comb = comb_bkmrfits(kmfitbma.list)
 summary(kmfitbma.comb)
 ExtractPIPs(kmfitbma.comb) # posterior inclusion probabilities
 
-mean.difference2 <- OverallRiskSummaries(fit = kmfitbma.comb, y = y, Z = Z, X =NULL,                                       qs = seq(0.25, 0.75, by = 0.05), 
-                                      q.fixed = 0.5, method = "exact")
+mean.difference2 <- suppressWarnings(OverallRiskSummaries(fit = kmfitbma.comb, y = y, Z = Z, X = X,                                       qs = seq(0.25, 0.75, by = 0.05), 
+                                      q.fixed = 0.5, method = "exact"))
 mean.difference2
 
 with(mean.difference2, {
@@ -190,4 +190,91 @@ with(mean.difference2, {
   box(bty='l')
 })
 
+```
+
+### Example 5: Parallel posterior summaries as diagnostics
+`bkmrhat` also has ported versions of the native posterior summarization functions to compare how these summaries vary across parallel chains. Note that these should serve as diagnostics, and final posterior inference should be done on the combined chain. The easiest of these functions to demonstrate is the `OverallRiskSummaries_parallel` function, which simply runs `OverallRiskSummaries` (from the `bkmr` package) on each chain and combines the results. Notably, this function fixes the y-axis at zero for the median, so it under-represents overall predictive variation across chains, but captures variation in effect estimates across the chains. Ideally, that variation is negligible - e.g. if you see differences between chains that would result in different interpretations, you should re-fit the model with more iterations. In this example, the results are reasonably consistent across chains, but one might want to run more iterations if, say, the differences seen across the upper error bounds are of such a magnitude as to be practically meaningful.
+```{r post diagnostics, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+set.seed(111)
+system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
+
+meandifference_par = OverallRiskSummaries_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
+
+head(meandifference_par)
+nchains = length(unique(meandifference_par$chain))
+
+with(meandifference_par, {
+  plot.new()
+  plot.window(ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
+              xlim=c(min(quantile), max(quantile)),
+       ylab= "Mean difference", xlab = "Joint quantile")
+  for(cch in seq_len(nchains)){
+    width = diff(quantile)[1]
+    jit = runif(1, -width/5, width/5)
+   points(jit+quantile[chain==cch], est[chain==cch], pch=19, col=cch) 
+   segments(x0=jit+quantile[chain==cch], x1=jit+quantile[chain==cch], y0 = est[chain==cch] - 1.96*sd[chain==cch], y1 = est[chain==cch] + 1.96*sd[chain==cch], col=cch)
+  }
+  abline(h=0)
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+})
+
+regfuns_par = PredictorResponseUnivar_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
+
+head(regfuns_par)
+nchains = length(unique(meandifference_par$chain))
+
+# single variable
+with(regfuns_par[regfuns_par$variable=="z1",], {
+  plot.new()
+  plot.window(ylim=c(min(est - 1.96*se), max(est + 1.96*se)), 
+              xlim=c(min(z), max(z)),
+       ylab= "Predicted Y", xlab = "Z")
+  pc = palette.colors(alpha=1)
+  pc2 = palette.colors(alpha=0.1)
+  for(cch in seq_len(nchains)){
+   ribbonX = c(z[chain==cch], rev(z[chain==cch]))
+   ribbonY = c(est[chain==cch] + 1.96*se[chain==cch], rev(est[chain==cch] - 1.96*se[chain==cch]))
+   polygon(x=ribbonX, y = ribbonY, col=pc2[cch], border=NA)
+   lines(z[chain==cch], est[chain==cch], pch=19, col=pc[cch]) 
+  }
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+})
+
+```
+
+### Example 5b: Parallel posterior summaries as diagnostics
+BKMR can also output individual level predictions of the outcome at observed or new levels of exposure
+```{r post diagnostics 2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+set.seed(111)
+system.time(kmfitbmah.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE, est.h =TRUE)))
+
+postpreds = SamplePred_parallel(kmfitbma.list)
+nchains = length(unique(postpreds$chain))
+
+with(postpreds, {
+  var = z50
+  dens = tapply(var, chain, function(x) data.frame(x=density(x)$x, y=density(x)$y))
+  alldens = do.call("rbind", dens)
+  alldens$chain = rep(seq_len(nchains), each=nrow(alldens)/nchains)
+  plot.new()
+  plot.window(ylim=c(min(alldens$y), max(alldens$y)), 
+              c(min(alldens$x), max(alldens$x)),
+       xlab= "Predicted Y", ylab = "Kernel posterior density")
+  pc = palette.colors(alpha=0.1)
+  for(cch in seq_len(nchains)){
+   polygon(alldens$x, alldens$y, pch=19, col=pc[cch]) 
+  }
+  axis(1)
+  axis(2)
+  box(bty='l')
+  #legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+})
 ```

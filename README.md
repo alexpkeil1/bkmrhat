@@ -1,4 +1,4 @@
-`bkmrhat` v0.1.7
+`bkmrhat` v0.1.12
 
 Diagnostics and multi-chain tools with Bayesian kernel machine regression (bkmr)
 
@@ -9,9 +9,9 @@ Bayesian kernel machine regression (BKMR) is a semi-parametric approach to Bayes
 
 #### install
     install.packages("devtools")
-    devtools::install_github("alexpkeil1/bkmrhat")
+    devtools::install_github("alexpkeil1/bkmrhat", build_vignettes = TRUE)
 
-#### simulate data from `bkmr` package
+#### simulate data from a `bkmr` package function
 	set.seed(111)
 	library(coda)
 	library(bkmr)
@@ -68,5 +68,3 @@ Bayesian kernel machine regression (BKMR) is a semi-parametric approach to Bayes
                                       qs = seq(.05, 0.95, by = 0.1),
                                       q.fixed = 0.5, method = "exact")
     mdiff
-
-

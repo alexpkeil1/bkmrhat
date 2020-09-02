@@ -13,13 +13,18 @@
     width <- ncol(kmobj[[matparm]])
     if (!is.null(width)) {
       outlist[[matparm]] <- as.data.frame(as.matrix(kmobj[[matparm]]))
-      names(outlist[[matparm]]) <- paste0(matparm, "_", 1:width)
+      if(width>1){
+        names(outlist[[matparm]]) <- paste0(matparm, 1:width)
+      } else{
+        names(outlist[[matparm]]) <- paste0(matparm)
+      }
     }
   }
   for (vecparm in veclist) {
     outlist[[vecparm]] <- as.data.frame(as.matrix(kmobj[[vecparm]]))
     names(outlist[[vecparm]]) <- paste0(vecparm)
   }
+  names(outlist) <- NULL
   outdf <- as.data.frame(do.call("cbind", outlist))
   outdf
 }
