@@ -61,7 +61,7 @@ Bayesian kernel machine regression (BKMR) is a semi-parametric approach to Bayes
 
 #### combine chains and use `bkmr` native posterior functions
     combobj = comb_bkmrfits(fitkm.list)
-    comboj$iter
+    combobj$iter
     summary(combobj) # rejection rates will be slightly off for multi-chain objects
     # mean difference function from `bkmr` package (default burnin of half of total number of iterations)
       mdiff = OverallRiskSummaries(fit = combobj,
