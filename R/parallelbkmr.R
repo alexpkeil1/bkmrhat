@@ -115,7 +115,7 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   getparmvec <- function(lst, parm) {
     lst[[parm]][(burnin+1):kmIter]
   }
-  for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta")) {
+  for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta", "ystar")) {
     tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
     kmoverall[[matparm]] <- rbind(tmp[autoburn, , drop=FALSE],
                                   tmp[autonotburn, , drop=FALSE])
@@ -256,13 +256,13 @@ SingVarRiskSummaries_parallel <- function(x, ...){
 #  as.data.frame(do.call("rbind", res))
 #}
 
-CalcPIPs_parallel <- function(x, ...){
+ExtractPIPs_parallel <- function(x, ...){
   #' Posterior inclusion probabilities by chain
   #' @param x bkmrfit.list object from \code{\link[bkmrhat]{kmbayes_parallel}}
   #' @param ... arguments to \code{\link[bkmr]{CalcPIPs}}
   #'
   #' @return data.frame with all chains together
-  #' @importFrom bkmr CalcPIPs
+  #' @importFrom bkmr ExtractPIPs
   #' @export
   #'
   ff <- list()
@@ -271,8 +271,7 @@ CalcPIPs_parallel <- function(x, ...){
     xii = x[[ii]]
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
-      df = suppressWarnings(data.frame(PIP=bkmr::CalcPIPs(xii)))
-      df$var = paste0("z",1:nrow(df))
+      df = suppressWarnings(data.frame(bkmr::ExtractPIPs(xii)))
       df$chain=ii
       df
     })

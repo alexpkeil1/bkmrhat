@@ -14,7 +14,7 @@ vignette: >
 `bkmr` is a package to implement Bayesian kernel machine regression (BKMR) using Markov chain Monte Carlo (MCMC). Notably, `bkmr` is missing some key features in Bayesian inference and MCMC diagnostics: 1) no facility for running multiple chains in parallel 2) no inference across multiple chains 3) limited posterior summary of parameters 4) limited diagnostics. The `bkmrhat` package is a lightweight set of function that fills in each of those gaps by enabling post-processing of `bkmr` output in other packages and building a small framework for parallel processing.
 
 ## How to use the `bkmrhat` package
-1. Fit a BKMR model for a single chain using the `kmbaryes` function from `bkmr`, or use multiple parallel chains `kmbayes_parallel` from `bkmrhat`
+1. Fit a BKMR model for a single chain using the `kmbayes` function from `bkmr`, or use multiple parallel chains `kmbayes_parallel` from `bkmrhat`
 2. Perform diagnostics on single or multiple chains using the `kmbayes_diag` function (uses functions from the `rstan` package) OR convert the BKMR fit(s) to `mcmc` (one chain) or `mcmc.list` (multiple chains) objects from the `coda` package using `as.mcmc` or `as.mcmc.list` from the `bkmrhat` package. The `coda` package has a whole host of inference and diagnostic procedures (but may lag behind some of the diagnostics functions from `rstan`).
 3. Perform posterior summaries using `coda` functions or combine chains from a `kmbayes_parallel` fit using `comb_bkmrfits`. Final posterior inferences can be made on the combined object, which enables use of `bkmr` package functions for visual summaries of independent and joint effects of exposures in the `bkmr` model.
 
@@ -118,7 +118,7 @@ densplot(kmfit5coda)
 
 
 
-Other diagnostics from the `coda` package are available here.
+The `coda` package has many other diagnostics available.
 
 Finally, the chains from the original `kmbayes_parallel` fit can be combined into a single chain (see the help files for how to deal with burn-in, the default in `bkmr` is to use the first half of the chain, which is respected here). The `comb_bkmrfits` function smartly first combines the burn-in iterations and then combines the iterations after burnin, such that the burn-in rules of subsequent functions within the `bkmr` package are respected. Note that unlike the `as.mcmc.list` function, this function combines all iterations into a single chain, so trace plots will not be good diagnotistics in this combined object, and it should be used once one is assured that all chains have converged and the burn-in is acceptable.
 
@@ -160,21 +160,72 @@ with(mean.difference, {
 
 # Example 4: diagnostics and inference when variable selection is used (Bayesian model averaging over the scale parameters of the kernel function)
 
-These results parallel previous session and are given here without comment, other than to note that no fixed effects (X variables) are included, and that it is useful to check the posterior inclusion probabilities to ensure they are similar across chains.
+These results parallel the previous section and are given here without comment, other than to note that no fixed effects (X variables) are included, and that it is useful to check the posterior inclusion probabilities to ensure they are similar across chains. There are several functions ported directly from the `bkmr` package (e.g. `ExtractPIPs` -> `ExtractPIPs_parallel`) that can be used on parallel chains. Here, we check the r-hat diagnostic and see that it is higher than recommended (rstan recommends < 1.05, coda recommends < 1.01 for upper CI) and then increase iterations accordingly - it is common with Bayesian variable selection methods that more iterations are needed to achieve convergence. 
 ```{r varsel, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 set.seed(111)
 system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
 
-bmadiag = kmbayes_diag(kmfitbma.list)
+bmadiag = kmbayes_diag(kmfitbma.list, print=TRUE)
+# r-hat seems too low, so run again with more samples: note this is common with variable selection
+
+# first, let's visualize posterior exclusion probability of each chain in a set of chains that don't seem to have converged
+pips = ExtractPIPs_parallel(kmfitbma.list)
+nvars = length(unique(pips$variable))
+nchains = length(unique(pips$chain))
+pc = palette.colors(alpha=0.9)
+
+with(pips, {
+  plot.new()
+  plot.window(ylim=c(0,1), 
+              xlim=c(1, nvars),
+       ylab= "PIP", xlab = "Variable")
+  for(cch in seq_len(nchains)){
+   points(as.factor(variable[chain==cch]), PIP[chain==cch], col=pc[cch], pch=19) 
+  }
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottomleft", col=1:nchains, pch=19, legend=paste("chain", 1:nchains), bty="o", ncol = 2)
+    title("PIPs for samples with poor convergence")
+})
+
+# now run with more samples
+set.seed(111)
+system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000, verbose = FALSE, varsel = TRUE)))
+
+bmadiag = kmbayes_diag(kmfitbma.list, print=TRUE)
+# now check r-hat with coda package
+kmfitbmacoda = as.mcmc.list(kmfitbma.list)
+gelman.diag(kmfitbmacoda)
+
+
 
 # posterior exclusion probability of each chain
-lapply(kmfitbma.list, function(x) t(ExtractPIPs(x)))
+pips = ExtractPIPs_parallel(kmfitbma.list)
+nvars = length(unique(pips$variable))
+nchains = length(unique(pips$chain))
+pc = palette.colors(alpha=0.9)
+
+with(pips, {
+  plot.new()
+  plot.window(ylim=c(0,1), 
+              xlim=c(1, nvars),
+       ylab= "PIP", xlab = "Variable")
+  for(cch in seq_len(nchains)){
+   points(as.factor(variable[chain==cch]), PIP[chain==cch], col=pc[cch], pch=19) 
+  }
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottomleft", col=1:nchains, pch=19, legend=paste("chain", 1:nchains), bty="o", ncol = 2)
+  title("PIPs for samples with better evidence for convergence")
+})
 
 
 kmfitbma.comb = comb_bkmrfits(kmfitbma.list)
 summary(kmfitbma.comb)
-ExtractPIPs(kmfitbma.comb) # posterior inclusion probabilities
+ExtractPIPs(kmfitbma.comb) # posterior inclusion probabilities averaged over chains
 
 mean.difference2 <- suppressWarnings(OverallRiskSummaries(fit = kmfitbma.comb, y = y, Z = Z, X = X,                                       qs = seq(0.25, 0.75, by = 0.05), 
                                       q.fixed = 0.5, method = "exact"))
@@ -193,17 +244,21 @@ with(mean.difference2, {
 ```
 
 ### Example 5: Parallel posterior summaries as diagnostics
-`bkmrhat` also has ported versions of the native posterior summarization functions to compare how these summaries vary across parallel chains. Note that these should serve as diagnostics, and final posterior inference should be done on the combined chain. The easiest of these functions to demonstrate is the `OverallRiskSummaries_parallel` function, which simply runs `OverallRiskSummaries` (from the `bkmr` package) on each chain and combines the results. Notably, this function fixes the y-axis at zero for the median, so it under-represents overall predictive variation across chains, but captures variation in effect estimates across the chains. Ideally, that variation is negligible - e.g. if you see differences between chains that would result in different interpretations, you should re-fit the model with more iterations. In this example, the results are reasonably consistent across chains, but one might want to run more iterations if, say, the differences seen across the upper error bounds are of such a magnitude as to be practically meaningful.
+`bkmrhat` also has ported versions of the native posterior summarization functions to compare how these summaries vary across parallel chains. Note that these should serve as diagnostics, and final posterior inference should be done on the combined chain. The easiest of these functions to demonstrate is the `OverallRiskSummaries_parallel` function, which simply runs `OverallRiskSummaries` (from the `bkmr` package) on each chain and combines the results. Notably, this function fixes the y-axis at zero for the median, so it under-represents overall predictive variation across chains, but captures variation in effect estimates across the chains. Ideally, that variation is negligible - e.g. if you see differences between chains that would result in different interpretations, you should re-fit the model with more iterations. In this example, the results are reasonably consistent across chains, but one might want to run more iterations if, say, the differences seen across the upper error bounds are of such a magnitude as to be practically meaningful. We first demonstrate what the posterior summaries might look like for MCMC that has apparently not converged, and then demonstrate what they look like with MCMC that has converged.
+
+
 ```{r post diagnostics, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
-set.seed(111)
-system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
+# recall this model did not have enough iterations
+#set.seed(111)
+#system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
 
 meandifference_par = OverallRiskSummaries_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
 
 head(meandifference_par)
 nchains = length(unique(meandifference_par$chain))
 
+pc = palette.colors(alpha=0.5)
 with(meandifference_par, {
   plot.new()
   plot.window(ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
@@ -211,8 +266,8 @@ with(meandifference_par, {
        ylab= "Mean difference", xlab = "Joint quantile")
   for(cch in seq_len(nchains)){
     width = diff(quantile)[1]
-    jit = runif(1, -width/5, width/5)
-   points(jit+quantile[chain==cch], est[chain==cch], pch=19, col=cch) 
+    jit = runif(1, -width/2.5, width/2.5)
+   points(jit+quantile[chain==cch], est[chain==cch], pch=19, col=pc[cch]) 
    segments(x0=jit+quantile[chain==cch], x1=jit+quantile[chain==cch], y0 = est[chain==cch] - 1.96*sd[chain==cch], y1 = est[chain==cch] + 1.96*sd[chain==cch], col=cch)
   }
   abline(h=0)
@@ -220,6 +275,7 @@ with(meandifference_par, {
   axis(2)
   box(bty='l')
   legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+   title("Overall summaries, model with poor convergence")
 })
 
 regfuns_par = PredictorResponseUnivar_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
@@ -245,6 +301,63 @@ with(regfuns_par[regfuns_par$variable=="z1",], {
   axis(2)
   box(bty='l')
   legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+   title("Single variable summary, model with poor convergence")
+})
+
+# now repeat with more iterations
+set.seed(111)
+system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000, verbose = FALSE, varsel = TRUE)))
+
+meandifference_par = OverallRiskSummaries_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
+
+head(meandifference_par)
+nchains = length(unique(meandifference_par$chain))
+
+with(meandifference_par, {
+  plot.new()
+  plot.window(ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
+              xlim=c(min(quantile), max(quantile)),
+       ylab= "Mean difference", xlab = "Joint quantile")
+  for(cch in seq_len(nchains)){
+    width = diff(quantile)[1]
+    jit = runif(1, -width/2.5, width/2.5)
+   points(jit+quantile[chain==cch], est[chain==cch], pch=19, col=pc[cch]) 
+   segments(x0=jit+quantile[chain==cch], x1=jit+quantile[chain==cch], y0 = est[chain==cch] - 1.96*sd[chain==cch], y1 = est[chain==cch] + 1.96*sd[chain==cch], col=cch)
+  }
+  abline(h=0)
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+   title("Overall summaries, model with better evidence for convergence")
+})
+
+
+
+regfuns_par = PredictorResponseUnivar_parallel(kmfitbma.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
+
+head(regfuns_par)
+nchains = length(unique(meandifference_par$chain))
+
+# single variable
+with(regfuns_par[regfuns_par$variable=="z1",], {
+  plot.new()
+  plot.window(ylim=c(min(est - 1.96*se), max(est + 1.96*se)), 
+              xlim=c(min(z), max(z)),
+       ylab= "Predicted Y", xlab = "Z")
+  pc = palette.colors(alpha=1)
+  pc2 = palette.colors(alpha=0.1)
+  for(cch in seq_len(nchains)){
+   ribbonX = c(z[chain==cch], rev(z[chain==cch]))
+   ribbonY = c(est[chain==cch] + 1.96*se[chain==cch], rev(est[chain==cch] - 1.96*se[chain==cch]))
+   polygon(x=ribbonX, y = ribbonY, col=pc2[cch], border=NA)
+   lines(z[chain==cch], est[chain==cch], pch=19, col=pc[cch]) 
+  }
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+   title("Single variable summary, model with better evidence for convergence")
 })
 
 ```
@@ -277,4 +390,62 @@ with(postpreds, {
   box(bty='l')
   #legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
 })
+```
+
+### Example 6: Probit model
+BKMR handles binary outcomes via a probit model, which is implemented via data augmentation. This example shows that the probit model will often need more samples for convergence, and posterior summaries will often be extremely variable in settings where a continuous outcome might produce reasonable posterior inference in the same amount of samples.
+```{r probit, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+set.seed(111)
+dat <- bkmr::SimData(n = 50, M = 5, ind=1:3, Zgen="realistic", family = "binomial")
+y <- dat$y
+Z <- dat$Z
+X <- cbind(dat$X, rnorm(50))
+head(cbind(y,Z,X))
+
+set.seed(111)
+system.time(kmfitbmabin.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE, family = "binomial")))
+
+
+bindiag = kmbayes_diag(kmfitbmabin.list)
+
+kmfitbmabincoda = as.mcmc.list(kmfitbmabin.list)
+gelman.diag(kmfitbmabincoda, multivariate = FALSE)
+
+
+meandifference_par = OverallRiskSummaries_parallel(kmfitbmabin.list, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
+
+head(meandifference_par)
+nchains = length(unique(meandifference_par$chain))
+
+with(meandifference_par, {
+  plot.new()
+  plot.window(ylim=c(min(est - 1.96*sd), max(est + 1.96*sd)), 
+              xlim=c(min(quantile), max(quantile)),
+       ylab= "Mean difference", xlab = "Joint quantile")
+  for(cch in seq_len(nchains)){
+    width = diff(quantile)[1]
+    jit = runif(1, -width/2.5, width/2.5)
+   points(jit+quantile[chain==cch], est[chain==cch], pch=19, col=pc[cch]) 
+   segments(x0=jit+quantile[chain==cch], x1=jit+quantile[chain==cch], y0 = est[chain==cch] - 1.96*sd[chain==cch], y1 = est[chain==cch] + 1.96*sd[chain==cch], col=cch)
+  }
+  abline(h=0)
+  axis(1)
+  axis(2)
+  box(bty='l')
+  legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
+   title("Overall summaries, probit model (poor convergence)")
+})
+
+
+# combine multiple chains into a single chain
+kmfitbmabincomb = comb_bkmrfits(kmfitbmabin.list)
+
+
+# For example:
+summary(kmfitbmabincomb)
+
+meandifferencebin = suppressWarnings(OverallRiskSummaries(kmfitbmabincomb, y = y, Z = Z, X = X ,qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact"))
+
+meandifferencebin
+
 ```
