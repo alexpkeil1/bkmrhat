@@ -233,8 +233,8 @@ with(regfuns_par[regfuns_par$variable=="z1",], {
   plot.window(ylim=c(min(est - 1.96*se), max(est + 1.96*se)), 
               xlim=c(min(z), max(z)),
        ylab= "Predicted Y", xlab = "Z")
-  pc = palette.colors(alpha=1)
-  pc2 = palette.colors(alpha=0.1)
+  pc = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999")
+  pc2 = c("#0000001A", "#E69F001A", "#56B4E91A", "#009E731A", "#F0E4421A", "#0072B21A", "#D55E001A", "#CC79A71A", "#9999991A")
   for(cch in seq_len(nchains)){
    ribbonX = c(z[chain==cch], rev(z[chain==cch]))
    ribbonY = c(est[chain==cch] + 1.96*se[chain==cch], rev(est[chain==cch] - 1.96*se[chain==cch]))
