@@ -1,8 +1,8 @@
 Package: bkmrhat
-Title: Diagnostics and Multi-Chain Tools with Bayesian Kernel
-    Machine Regression
-Version: 0.1.14
-Date: 2020-09-03
+Title: Parallel Chain Tools for Bayesian Kernel Machine
+    Regression
+Version: 0.1.15
+Date: 2020-09-08
 Authors@R: 
     person(given = "Alexander",
            family = "Keil",

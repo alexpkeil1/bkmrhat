@@ -15,7 +15,7 @@ kmbayes_diag <- function(kmobj, ...) {
   #' @export
   #'
   #' @examples
-  #' \dontrun{
+  #' \donttest{
   #' set.seed(111)
   #' dat <- bkmr::SimData(n = 50, M = 4)
   #' y <- dat$y
@@ -28,6 +28,8 @@ kmbayes_diag <- function(kmobj, ...) {
   #'   verbose = FALSE, varsel = TRUE)
   #' kmbayes_diag(fitkm.list)
   #' kmbayes_diag(fitkm.list[[1]]) # just the first chain
+  #'
+  #' closeAllConnections()
   #' }
   #'
   if (inherits(kmobj, "bkmrfit.list")) {

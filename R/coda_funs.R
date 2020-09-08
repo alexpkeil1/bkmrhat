@@ -22,7 +22,7 @@ as.mcmc.bkmrfit <- function(x, iterstart=1, thin=1, ...) {
   #' @examples
   #'
   #' # following example from https://jenfb.github.io/bkmr/overview.html
-  #'  \dontrun{
+  #'  \donttest{
   #' set.seed(111)
   #' library(coda)
   #' library(bkmr)
@@ -72,7 +72,7 @@ as.mcmc.list.bkmrfit.list <- function(x, ...) {
   #'
   #' @examples
   #' # following example from https://jenfb.github.io/bkmr/overview.html
-  #'  \dontrun{
+  #'  \donttest{
   #' set.seed(111)
   #' library(coda)
   #' dat <- bkmr::SimData(n = 50, M = 4)
@@ -96,6 +96,8 @@ as.mcmc.list.bkmrfit.list <- function(x, ...) {
   #' # both of these will also fail with delta functions (when using variable selection)
   #' try(gelman.plot(mcmcobj))
   #' try(geweke.plot(mcmcobj))
+  #'
+  #' closeAllConnections()
   #' }
   requireNamespace("coda")
   res <- lapply(x, as.mcmc.bkmrfit, ...)
