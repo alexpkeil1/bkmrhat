@@ -1,4 +1,5 @@
 cat("Testing coda")
+library(bkmr)
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 4)
 y <- dat$y
