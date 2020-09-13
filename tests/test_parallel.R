@@ -1,5 +1,5 @@
 cat("Testing parallel")
-library(bkmr)
+library(bkmrhat)
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 4)
 y <- dat$y
