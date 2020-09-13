@@ -1,5 +1,7 @@
 `bkmrhat` v0.1.16
 
+[![Build Status](https://travis-ci.org/alexpkeil1/bkmrhat.svg?branch=master)](https://travis-ci.org/alexpkeil1/bkmrhat)
+
 Diagnostics and multi-chain tools with Bayesian kernel machine regression (bkmr)
 
 Bayesian kernel machine regression (BKMR) is a semi-parametric approach to Bayesian GLMs. The `bkmr` package implements BKMR under identity and probit links, but does not implement standard Bayesian diagnostics or interface with R packages that can do these diagnostics, nor does it allow easy implementation of parallel chains, which is one of the easiest ways to speed up Markov chain Monte Carlo on modern computers. This package fixes those problems.
