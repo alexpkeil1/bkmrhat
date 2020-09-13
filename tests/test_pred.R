@@ -12,6 +12,8 @@ future::plan(strategy = future::multiprocess)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 10,
                                verbose = FALSE, varsel = TRUE, family="binomial")
 sinkit = kmbayes_diag(fitkm.list)
-sinkit = suppressWarnings(predict(comb_bkmrfits(fitkm.list)))
+xx = comb_bkmrfits(fitkm.list)
+sinkit = suppressWarnings(predict(xx))
+sinkit = suppressWarnings(predict(xx, ptype="sd.fit"))
 
 closeAllConnections()
