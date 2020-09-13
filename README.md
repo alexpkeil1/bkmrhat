@@ -1,6 +1,7 @@
-`bkmrhat` v0.1.17
+`bkmrhat` v0.1.16
 
-[![Build Status](https://travis-ci.org/alexpkeil1/bkmrhat.svg?branch=master)](https://travis-ci.org/alexpkeil1/bkmrhat) [![codecov](https://codecov.io/gh/alexpkeil1/bkmrhat/branch/master/graph/badge.svg)](https://codecov.io/gh/alexpkeil1/bkmrhat)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![](http://www.r-pkg.org/badges/version/bkmrhat)](http://www.r-pkg.org/pkg/bkmrhat)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/bkmrhat)](http://www.r-pkg.org/pkg/bkmrhat)  [![Build Status](https://travis-ci.org/alexpkeil1/bkmrhat.svg?branch=master)](https://travis-ci.org/alexpkeil1/bkmrhat) [![codecov](https://codecov.io/gh/alexpkeil1/bkmrhat/branch/master/graph/badge.svg)](https://codecov.io/gh/alexpkeil1/bkmrhat)
 
 Diagnostics and multi-chain tools with Bayesian kernel machine regression (bkmr)
 
