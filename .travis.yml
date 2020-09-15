@@ -5,6 +5,9 @@ r:
   - release
   - devel
 
+os:
+  - osx
+
 r_packages:
   - covr
 
