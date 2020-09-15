@@ -2,7 +2,6 @@ language: r
 
 r:
   - release
-  - devel
 
 os:
   - osx
