@@ -43,7 +43,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   res
 }
 
-comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
+kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' Combine multiple BKMR chains
   #'
   #' @description Combine multiple chains comprising BKMR fits at different starting
@@ -67,7 +67,7 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' given by \code{chain} and \code{iters}, which index the specific chains and
   #' iterations for each posterior sample in the \code{bkmrplusfit} object
   #' @export
-  #'
+  #' @name kmbayes_combine
   #' @examples
   #' \donttest{
   #' # following example from https://jenfb.github.io/bkmr/overview.html
@@ -132,4 +132,7 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   kmoverall
 }
 
+#' @rdname kmbayes_combine
+#' @export
+comb_bkmrfits <- kmbayes_combine
 
