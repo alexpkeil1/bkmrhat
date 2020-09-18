@@ -51,7 +51,7 @@ comb_bkmrfits <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #'
   #' @details Chains are not combined fully sequentially
   #'
-  #' @param fitkm.list output from kmbayes_par
+  #' @param fitkm.list output from \code{\link[bkmrhat]{kmbayes_parallel}}
   #' @param burnin add in custom burnin (number of burnin iterations per chain)
   #' @param reorder ensures that the first half of the combined chain contains
   #'  only the first half of each individual chain - this allows unaltered use

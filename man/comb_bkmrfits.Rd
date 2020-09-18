@@ -7,7 +7,7 @@
 comb_bkmrfits(fitkm.list, burnin = 0, reorder = TRUE)
 }
 \arguments{
-\item{fitkm.list}{output from kmbayes_par}
+\item{fitkm.list}{output from \code{\link[bkmrhat]{kmbayes_parallel}}}
 
 \item{burnin}{add in custom burnin (number of burnin iterations per chain)}
 
