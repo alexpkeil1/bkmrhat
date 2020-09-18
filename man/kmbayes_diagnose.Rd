@@ -3,7 +3,7 @@
 \name{kmbayes_diagnose}
 \alias{kmbayes_diagnose}
 \alias{kmbayes_diag}
-\title{#' MCMC diagnostics using rstan}
+\title{MCMC diagnostics using rstan}
 \usage{
 kmbayes_diagnose(kmobj, ...)
 

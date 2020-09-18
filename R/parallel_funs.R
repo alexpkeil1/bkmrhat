@@ -83,7 +83,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' # run 4 parallel Markov chains
   #' fitkm.list <- kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000,
   #'   verbose = FALSE, varsel = TRUE)
-  #' bigkm = comb_bkmrfits(fitkm.list)
+  #' bigkm = kmbayes_combine(fitkm.list)
   #' ests = ExtractEsts(bigkm)
   #' ExtractPIPs(bigkm)
   #' pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)

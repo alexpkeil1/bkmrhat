@@ -1,7 +1,7 @@
 #### MCMC diagnostics ####
 
 
-#' #' MCMC diagnostics using rstan
+#' MCMC diagnostics using rstan
 #'
 #' @description Give MCMC diagnostistics from the \code{rstan} package
 #' using the \code{\link[rstan]{Rhat}}, \code{\link[rstan]{ess_bulk}},
