@@ -87,7 +87,8 @@ kmbayes_continue <- function(fit, ...){
   last.iter = fit$iter
   ending.values = sapply(names(fit$starting.values), function(x) .ensuremat(fit[[x]])[last.iter,])
   if(!fit$est.h) ending.values$h.hat = ending.values$h.hat + 1
-  ending.values$r = mean(ending.values$r + eps)
+  if(sum(ending.values$delta)>1) ending.values$r = mean(ending.values$r[ending.values$delta])
+  if(sum(ending.values$delta)==0) ending.values$r = eps
   newstart = list(starting.values = ending.values)
   unfit = unclass(fit)
   keepargs = names(as.list(args(kmbayes)))

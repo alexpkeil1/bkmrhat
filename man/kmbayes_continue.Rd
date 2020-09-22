@@ -27,11 +27,17 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 \dontrun{
-fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X)
+fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE)
 
 fitty2 = kmbayes_continue(fitty1, iter=3000)
 cobj = as.mcmc(fitty2)
-plot(cobj)
+varnames(cobj)
+
+fitty1p = kmbayes_parallel(y=y,Z=Z,X=X, est.h=FALSE)
+
+fitty2p = kmbayes_continue(fitty1, iter=3000)
+cobj = as.mcmc.list(fitty2)
+varnames(cobj)
 }
 
 }
