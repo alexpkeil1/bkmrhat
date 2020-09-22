@@ -1,3 +1,5 @@
+##### test and add #####
+
 .add_bkmrfits <- function(fitkm.list) {
   # combine two bkmr fits of possibly different lengths
   burnin=0
@@ -48,7 +50,7 @@
 #'
 #' Use this when you've used MCMC sampling with the \code{\link[bkmr]{kmbayes}} function, but you did not take enough samples and do not want to start over.
 #'
-#' Note this does not fully start from the prior values of the MCMC chains. The \code{\link[bkmr]{kmbayes}} does not allow full specification of the kernel function parameters, so
+#' Note this does not fully start from the prior values of the MCMC chains. The \code{\link[bkmr]{kmbayes}} function does not allow full specification of the kernel function parameters, so this will restart the chain at the last values of all fixed effect parameters, and start the kernel `r` parmeters at the arithmetic mean of all `r` parameters from the last step in the previous chain.
 #' @param fit output from \code{\link[bkmr]{kmbayes}}
 #' @param ... arguments to \code{\link[bkmrhat]{kmbayes_continue}}
 #'
@@ -65,11 +67,17 @@
 #' Z <- dat$Z
 #' X <- dat$X
 #' \dontrun{
-#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X)
+#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE)
 #'
 #' fitty2 = kmbayes_continue(fitty1, iter=3000)
 #' cobj = as.mcmc(fitty2)
-#' plot(cobj)
+#' varnames(cobj)
+#'
+#' fitty1p = kmbayes_parallel(y=y,Z=Z,X=X, est.h=FALSE)
+#'
+#' fitty2p = kmbayes_continue(fitty1, iter=3000)
+#' cobj = as.mcmc.list(fitty2)
+#' varnames(cobj)
 #' }
 #'
 kmbayes_continue <- function(fit, ...){

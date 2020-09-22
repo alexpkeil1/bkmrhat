@@ -18,7 +18,7 @@ a \code{bkmrfit.continued} object, which inherits from \code{bkmrfit} objects si
 Use this when you've used MCMC sampling with the \code{\link[bkmr]{kmbayes}} function, but you did not take enough samples and do not want to start over.
 }
 \details{
-Note this does not fully start from the prior values of the MCMC chains. The \code{\link[bkmr]{kmbayes}} does not allow full specification of the kernel function parameters, so
+Note this does not fully start from the prior values of the MCMC chains. The \code{\link[bkmr]{kmbayes}} function does not allow full specification of the kernel function parameters, so this will restart the chain at the last values of all fixed effect parameters, and start the kernel \code{r} parmeters at the arithmetic mean of all \code{r} parameters from the last step in the previous chain.
 }
 \examples{
 set.seed(111)

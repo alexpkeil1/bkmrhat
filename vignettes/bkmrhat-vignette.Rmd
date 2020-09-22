@@ -15,8 +15,8 @@ vignette: >
 
 ## How to use the `bkmrhat` package
 1. Fit a BKMR model for a single chain using the `kmbaryes` function from `bkmr`, or use multiple parallel chains `kmbayes_parallel` from `bkmrhat`
-2. Perform diagnostics on single or multiple chains using the `kmbayes_diag` function (uses functions from the `rstan` package) OR convert the BKMR fit(s) to `mcmc` (one chain) or `mcmc.list` (multiple chains) objects from the `coda` package using `as.mcmc` or `as.mcmc.list` from the `bkmrhat` package. The `coda` package has a whole host of inference and diagnostic procedures (but may lag behind some of the diagnostics functions from `rstan`).
-3. Perform posterior summaries using `coda` functions or combine chains from a `kmbayes_parallel` fit using `comb_bkmrfits`. Final posterior inferences can be made on the combined object, which enables use of `bkmr` package functions for visual summaries of independent and joint effects of exposures in the `bkmr` model.
+2. Perform diagnostics on single or multiple chains using the `kmbayes_diagnose` function (uses functions from the `rstan` package) OR convert the BKMR fit(s) to `mcmc` (one chain) or `mcmc.list` (multiple chains) objects from the `coda` package using `as.mcmc` or `as.mcmc.list` from the `bkmrhat` package. The `coda` package has a whole host of inference and diagnostic procedures (but may lag behind some of the diagnostics functions from `rstan`).
+3. Perform posterior summaries using `coda` functions or combine chains from a `kmbayes_parallel` fit using `kmbayes_combine`. Final posterior inferences can be made on the combined object, which enables use of `bkmr` package functions for visual summaries of independent and joint effects of exposures in the `bkmr` model.
 
 First, simulate some data from the `bkmr` function
 ```{r metals data, echo=TRUE, results='markup', message=FALSE}
@@ -61,11 +61,11 @@ The diagnostics from the rstan package come from the `monitor` function (see the
 
 # Using rstan functions (set burnin/warmup to zero for comparability with coda numbers given later
 #  posterior summaries should be performed after excluding warmup/burnin)
-singlediag = kmbayes_diag(kmfit, warmup=0, digits_summary=2)
+singlediag = kmbayes_diagnose(kmfit, warmup=0, digits_summary=2)
 
 
 # Using rstan functions (multiple chains enable R-hat)
-multidiag = kmbayes_diag(kmfit5, warmup=0, digits_summary=2)
+multidiag = kmbayes_diagnose(kmfit5, warmup=0, digits_summary=2)
 
 # using coda functions, not using any burnin (for demonstration only)
 kmfitcoda = as.mcmc(kmfit, iterstart = 1)
@@ -120,7 +120,7 @@ densplot(kmfit5coda)
 
 Other diagnostics from the `coda` package are available here.
 
-Finally, the chains from the original `kmbayes_parallel` fit can be combined into a single chain (see the help files for how to deal with burn-in, the default in `bkmr` is to use the first half of the chain, which is respected here). The `comb_bkmrfits` function smartly first combines the burn-in iterations and then combines the iterations after burnin, such that the burn-in rules of subsequent functions within the `bkmr` package are respected. Note that unlike the `as.mcmc.list` function, this function combines all iterations into a single chain, so trace plots will not be good diagnotistics in this combined object, and it should be used once one is assured that all chains have converged and the burn-in is acceptable.
+Finally, the chains from the original `kmbayes_parallel` fit can be combined into a single chain (see the help files for how to deal with burn-in, the default in `bkmr` is to use the first half of the chain, which is respected here). The `kmbayes_combine` function smartly first combines the burn-in iterations and then combines the iterations after burnin, such that the burn-in rules of subsequent functions within the `bkmr` package are respected. Note that unlike the `as.mcmc.list` function, this function combines all iterations into a single chain, so trace plots will not be good diagnotistics in this combined object, and it should be used once one is assured that all chains have converged and the burn-in is acceptable.
 
 With this combined set of samples, you can follow any of the post-processing functions from the `bkmr` functions, which are described here: https://jenfb.github.io/bkmr/overview.html. For example, see below the estimation of the posterior mean difference along a series of quantiles of all exposures in Z.
 
@@ -135,7 +135,7 @@ HPDinterval(kmfitcoda)
 HPDinterval(kmfit5coda)
 
 # combine multiple chains into a single chain
-fitkmccomb = comb_bkmrfits(kmfit5)
+fitkmccomb = kmbayes_combine(kmfit5)
 
 
 # For example:
@@ -166,13 +166,13 @@ These results parallel previous session and are given here without comment, othe
 set.seed(111)
 system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
 
-bmadiag = kmbayes_diag(kmfitbma.list)
+bmadiag = kmbayes_diagnose(kmfitbma.list)
 
 # posterior exclusion probability of each chain
 lapply(kmfitbma.list, function(x) t(ExtractPIPs(x)))
 
 
-kmfitbma.comb = comb_bkmrfits(kmfitbma.list)
+kmfitbma.comb = kmbayes_combine(kmfitbma.list)
 summary(kmfitbma.comb)
 ExtractPIPs(kmfitbma.comb) # posterior inclusion probabilities
 
@@ -246,6 +246,25 @@ with(regfuns_par[regfuns_par$variable=="z1",], {
   box(bty='l')
   legend("bottom", col=1:nchains, pch=19, lty=1, legend=paste("chain", 1:nchains), bty="n")
 })
+
+```
+
+### Example 6: Continuing a fit
+Sometimes you just need to run more samples in an existing chain. For example, you run a bkmr fit for 3 days, only to find you don't have enough samples. A "continued" fit just means that you can start off at the last iteration you were at and just keep building on an existing set of results by lengthening the Markov chain. Unfortunately, due to how the `kmbayes` function accepts starting values, you can't quite do this *exactly*. The `kmbayes_continue` function continues a bkmr fit as well as the bkmr package will allow. The `r` parameters from the must all be initialized at the same value, so `kmbayes_continue` starts a new MCMC fit at the final values of all parameters from the prior bkmr fit, but sets all of the `r` parameters to the mean at the last iteration from the previous fit. One should inspect trace plots to see whether this will cause issues (e.g. if the traceplots demonstrate different patterns in the samples before and after the continuation). Here's an example with a quick check of diagnostics of the first part of the chain, and the combined chain (which could be used for inference or extended again, if necessary). We caution users that this function creates 2 distinct, if similar Markov chains, and to use appropriate caution if traceplots differ before and after each continuation.
+
+```{r continue, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+set.seed(111)
+# run 100 initial iterations for a model with only 2 exposures
+Z2 = Z[,1:2]
+kmfitbma.start <- suppressWarnings(kmbayes(y = y, Z = Z2, X = X, iter = 500, verbose = FALSE, varsel = FALSE))
+kmbayes_diag(kmfitbma.start)
+
+# run 2000 additional iterations
+moreiterations = kmbayes_continue(kmfitbma.start, iter=2000)
+kmbayes_diag(moreiterations)
+TracePlot(moreiterations, par="beta")
+TracePlot(moreiterations, par="r")
+
 
 ```
 
