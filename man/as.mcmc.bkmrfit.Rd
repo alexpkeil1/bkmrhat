@@ -38,9 +38,9 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 set.seed(111)
-fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 500, verbose = FALSE,
   varsel = FALSE)
-mcmcobj <- as.mcmc(fitkm, iterstart=2501)
+mcmcobj <- as.mcmc(fitkm, iterstart=251)
 summary(mcmcobj) # posterior summaries of model parameters
 # compare with default from bkmr package, which omits first 1/2 of chain
 summary(fitkm)

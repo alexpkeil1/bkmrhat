@@ -29,8 +29,8 @@ Z <- dat$Z
 X <- dat$X
 set.seed(111)
 Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
-future::plan(strategy = future::multiprocess)
-fitkm.list <- kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000,
+future::plan(strategy = future::multiprocess, workers=2)
+fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 5000,
   verbose = FALSE, varsel = TRUE)
 closeAllConnections()
 }

@@ -39,8 +39,8 @@ There is some overhead in parallel processing when using the `future` package, s
 
 ```{r 1 vs 1+ chains, cache=FALSE, results='markup'}
 
-# enable parallel processing
-future::plan(strategy = future::multiprocess)
+# enable parallel processing (up to 4 simultaneous processes here)
+future::plan(strategy = future::multiprocess, workers=4, .skip=TRUE)
 
 # single run of 4000 observations from bkmr package
 set.seed(111)
@@ -84,7 +84,24 @@ traceplot(kmfit5coda)
 ```
 
 
-Trace plots can be limited, and are sometimes difficult to use effectively with scale parameters (of which `bkmr` has many). Thus, more formal diagnostics are helpful.
+Now examine "cross correlation", which can help identify highly correlated parameters in the posterior, which can be problematic for MCMC sampling. Here there is a block {r3,r4,r5} which appear to be highly correlated. All other things equal, having highly correlated parameters in the posterior means that more samples are needed than would be needed with uncorrelated parameters.
+```{r diagnostics 2b, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# multiple cross-correlation plot (combines all samples)
+crosscorr(kmfit5coda)
+crosscorr.plot(kmfit5coda)
+```
+
+Now examine "autocorrelation" to identify parameters that have high correlation between subsequent iterations of the MCMC sampler, which can lead to inefficient MCMC sampling. All other things equal, having highly autocorrelated parameters in the posterior means that more samples are needed than would be needed with low-autocorrelation parameters.
+```{r diagnostics 2c, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+
+# multiple chain trace plot
+#autocorr(kmfit5coda) # lots of output
+autocorr.plot(kmfit5coda)
+```
+
+
+Graphical tools can be limited, and are sometimes difficult to use effectively with scale parameters (of which `bkmr` has many). Additionally, no single diagnostic is perfect, leading many authors to advocate the use of multiple, complementary diagnostics. Thus, more formal diagnostics are helpful.
 
 Gelman's r-hat diagnostic gives an interpretable diagnostic: the expected reduction in the standard error of the posterior means if you could run the chains to an infinite size. These give some idea about when is a fine idea to stop sampling. There are rules of thumb about using r-hat to stop sampling that are available from several authors (for example you can consult the help files for `rstan` and `coda`).
 
@@ -250,7 +267,7 @@ with(regfuns_par[regfuns_par$variable=="z1",], {
 ```
 
 ### Example 6: Continuing a fit
-Sometimes you just need to run more samples in an existing chain. For example, you run a bkmr fit for 3 days, only to find you don't have enough samples. A "continued" fit just means that you can start off at the last iteration you were at and just keep building on an existing set of results by lengthening the Markov chain. Unfortunately, due to how the `kmbayes` function accepts starting values, you can't quite do this *exactly*. The `kmbayes_continue` function continues a bkmr fit as well as the bkmr package will allow. The `r` parameters from the must all be initialized at the same value, so `kmbayes_continue` starts a new MCMC fit at the final values of all parameters from the prior bkmr fit, but sets all of the `r` parameters to the mean at the last iteration from the previous fit. One should inspect trace plots to see whether this will cause issues (e.g. if the traceplots demonstrate different patterns in the samples before and after the continuation). Here's an example with a quick check of diagnostics of the first part of the chain, and the combined chain (which could be used for inference or extended again, if necessary). We caution users that this function creates 2 distinct, if similar Markov chains, and to use appropriate caution if traceplots differ before and after each continuation.
+Sometimes you just need to run more samples in an existing chain. For example, you run a bkmr fit for 3 days, only to find you don't have enough samples. A "continued" fit just means that you can start off at the last iteration you were at and just keep building on an existing set of results by lengthening the Markov chain. Unfortunately, due to how the `kmbayes` function accepts starting values, you can't quite do this *exactly* in many cases (The function will relay a message and possible solutions, if any. `bkmr` package authors are aware of this issue). The `kmbayes_continue` function continues a `bkmr` fit as well as the `bkmr` package will allow. The `r` parameters from the fit must all be initialized at the same value, so `kmbayes_continue` starts a new MCMC fit at the final values of all parameters from the prior bkmr fit, but sets all of the `r` parameters to the mean at the last iteration from the previous fit. Additionally, if `h.hat` parameters are estimated, these are fixed to be above zero to meet similar constraints, either by fixing them at their posterior mean or setting to a small positive value. One should inspect trace plots to see whether this will cause issues (e.g. if the traceplots demonstrate different patterns in the samples before and after the continuation). Here's an example with a quick check of diagnostics of the first part of the chain, and the combined chain (which could be used for inference or extended again, if necessary). We caution users that this function creates 2 distinct, if very similar Markov chains, and to use appropriate caution if traceplots differ before and after each continuation. Nonetheless, in many cases one can act as though all samples are from the same Markov chain.
 
 ```{r continue, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 set.seed(111)

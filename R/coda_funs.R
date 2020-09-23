@@ -31,9 +31,9 @@ as.mcmc.bkmrfit <- function(x, iterstart=1, thin=1, ...) {
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 500, verbose = FALSE,
   #'   varsel = FALSE)
-  #' mcmcobj <- as.mcmc(fitkm, iterstart=2501)
+  #' mcmcobj <- as.mcmc(fitkm, iterstart=251)
   #' summary(mcmcobj) # posterior summaries of model parameters
   #' # compare with default from bkmr package, which omits first 1/2 of chain
   #' summary(fitkm)
@@ -81,9 +81,9 @@ as.mcmc.list.bkmrfit.list <- function(x, ...) {
   #' X <- dat$X
   #' set.seed(111)
   #' Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
-  #' future::plan(strategy = future::multiprocess)
-  #' # run 4 parallel Markov chains
-  #' fitkm.list <- kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000,
+  #' future::plan(strategy = future::multiprocess, workers=2)
+  #' # run 2 parallel Markov chains (more usually better)
+  #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 1000,
   #'   verbose = FALSE, varsel = FALSE)
   #' mcmcobj = as.mcmc.list(fitkm.list)
   #' summary(mcmcobj)
