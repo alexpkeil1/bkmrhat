@@ -1,5 +1,13 @@
 ##### test and add #####
 
+.checkver <- function(){
+  #' @importFrom utils packageVersion
+  ver = packageVersion('bkmr')[[1]]
+  minver = list(c(0L,2L,0L))
+  class(minver) = "package_version"
+  ver > minver
+}
+
 .add_bkmrfits <- function(fitkm.list) {
   # combine two bkmr fits of possibly different lengths
   burnin=0
@@ -81,14 +89,17 @@
 #' }
 #'
 kmbayes_continue <- function(fit, ...){
+  bkmrvernew =.checkver()
   eps = 1e-9
-  message("kmbayes cannot be continued perfectly at the last point\n
-          but this function will get close")
   last.iter = fit$iter
   ending.values = sapply(names(fit$starting.values), function(x) .ensuremat(fit[[x]])[last.iter,])
   if(!fit$est.h) ending.values$h.hat = ending.values$h.hat + 1
-  if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[ending.values$delta])
-  if(sum(ending.values$delta)==0) ending.values$r = eps
+  if(!bkmrvernew){
+    message("bkmr package is too old for this function to work perfectly")
+    message("update via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
+    if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[ending.values$delta])
+    if(sum(ending.values$delta)==0) ending.values$r = eps
+  }
   newstart = list(starting.values = ending.values)
   unfit = unclass(fit)
   keepargs = names(as.list(args(kmbayes)))
