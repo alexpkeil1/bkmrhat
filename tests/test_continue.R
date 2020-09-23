@@ -14,6 +14,10 @@ kmfitbma.start <- suppressWarnings(bkmr::kmbayes(y = y, Z = Z2, X = X, iter = 10
 moreiterations = suppressWarnings(kmbayes_continue(kmfitbma.start, iter=20))
 res = kmbayes_diag(moreiterations)
 
+#bkmr::TracePlot(moreiterations, par="r", comp=5)
+#bkmr::TracePlot(moreiterations, par="beta", comp=1)
+#bkmr::TracePlot(moreiterations, par="h", comp=1)
+
 
 stopifnot(kmfitbma.start$iter<moreiterations$iter)
 stopifnot(all(kmfitbma.start$sigsq.eps %in% moreiterations$sigsq.eps))
@@ -31,7 +35,6 @@ kmfitbma.start2 <- suppressWarnings(kmbayes_parallel(nchains=2,y = y, Z = Z2, X 
 # run 20 additional iterations
 moreiterations2 = suppressWarnings(kmbayes_parallel_continue(kmfitbma.start2, iter=20))
 res2 = kmbayes_diag(moreiterations2)
-
 
 
 stopifnot(kmfitbma.start2[[1]]$iter < moreiterations2[[1]]$iter)
