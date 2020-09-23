@@ -89,7 +89,7 @@
 #' }
 #'
 kmbayes_continue <- function(fit, ...){
-  bkmrvernew =.checkver()
+  bkmrvernew = .checkver()
   eps = 1e-9
   last.iter = fit$iter
   ending.values = sapply(names(fit$starting.values), function(x) .ensuremat(fit[[x]])[last.iter,])
@@ -102,7 +102,7 @@ kmbayes_continue <- function(fit, ...){
   if(!bkmrvernew){
     message("bkmr package is too old for this function to work perfectly")
     message("update via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
-    if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[ending.values$delta])
+    if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[which(ending.values$delta==1)])
     if(sum(ending.values$delta)==0) ending.values$r = eps
   }
   newstart = list(starting.values = ending.values)

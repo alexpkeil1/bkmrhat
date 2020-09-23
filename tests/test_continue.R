@@ -45,3 +45,4 @@ stopifnot(all(kmfitbma.start2[[1]]$h.hat[,1] %in% moreiterations2[[1]]$h.hat[,1]
 stopifnot(ncol(kmfitbma.start2[[1]]$beta) == ncol(moreiterations2[[1]]$beta))
 stopifnot(ncol(kmfitbma.start2[[1]]$r) == ncol(moreiterations2[[1]]$r))
 stopifnot(ncol(kmfitbma.start2[[1]]$h.hat) == ncol(moreiterations2[[1]]$h.hat))
+
