@@ -5,8 +5,8 @@
   matlist <- c("lambda", "r")
   veclist <- NULL
   if (!all(kmobj$X == 0)) matlist <- c("beta", matlist)
-  if (kmobj$family!="binomial") veclist <- c("sigsq.eps")
-  if (kmobj$family=="binomial") matlist <- c("ystar", matlist)
+  if (kmobj$family[1] != "binomial") veclist <- c("sigsq.eps")
+  if (kmobj$family[1] == "binomial") matlist <- c("ystar", matlist)
   if (kmobj$est.h) matlist <- c("h.hat", matlist)
   if (kmobj$varsel & allvars) matlist <- c(matlist, "delta") # rhat useful?
 

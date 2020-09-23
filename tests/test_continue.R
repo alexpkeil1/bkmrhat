@@ -46,3 +46,11 @@ stopifnot(ncol(kmfitbma.start2[[1]]$beta) == ncol(moreiterations2[[1]]$beta))
 stopifnot(ncol(kmfitbma.start2[[1]]$r) == ncol(moreiterations2[[1]]$r))
 stopifnot(ncol(kmfitbma.start2[[1]]$h.hat) == ncol(moreiterations2[[1]]$h.hat))
 
+
+# just see if it will work with probit model
+y <- 1.0*(dat$y>median(dat$y))
+fitty1 = suppressWarnings(bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, iter=5, family="binomial"))
+# do some diagnostics here to see if 1000 iterations (default) is enough
+# add 3000 additional iterations
+fitty2 = suppressWarnings(kmbayes_continue(fitty1, iter=5))
+stopifnot(ncol(fitty1$ystar[,1]) %in% ncol(fitty2$ystar[,1]))
