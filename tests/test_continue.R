@@ -7,11 +7,13 @@ Z <- dat$Z
 X <- cbind(dat$X, rnorm(50))
 
 # run 10 initial iterations for a model with only 2 exposures
-Z2 = Z[,1:2]
+Z2 = Z
 kmfitbma.start <- suppressWarnings(bkmr::kmbayes(y = y, Z = Z2, X = X, iter = 10, verbose = FALSE, varsel = TRUE, est.h = TRUE))
 
 # run 20 additional iterations
 moreiterations = suppressWarnings(kmbayes_continue(kmfitbma.start, iter=20))
+res = kmbayes_diag(moreiterations)
+
 
 stopifnot(kmfitbma.start$iter<moreiterations$iter)
 stopifnot(all(kmfitbma.start$sigsq.eps %in% moreiterations$sigsq.eps))
@@ -21,3 +23,22 @@ stopifnot(all(kmfitbma.start$h.hat[,1] %in% moreiterations$h.hat[,1]))
 stopifnot(ncol(kmfitbma.start$beta) == ncol(moreiterations$beta))
 stopifnot(ncol(kmfitbma.start$r) == ncol(moreiterations$r))
 stopifnot(ncol(kmfitbma.start$h.hat) == ncol(moreiterations$h.hat))
+
+
+# now in paralelel
+kmfitbma.start2 <- suppressWarnings(kmbayes_parallel(nchains=2,y = y, Z = Z2, X = X, iter = 10, verbose = FALSE, varsel = TRUE, est.h = FALSE))
+
+# run 20 additional iterations
+moreiterations2 = suppressWarnings(kmbayes_parallel_continue(kmfitbma.start2, iter=20))
+res2 = kmbayes_diag(moreiterations2)
+
+
+
+stopifnot(kmfitbma.start2[[1]]$iter < moreiterations2[[1]]$iter)
+stopifnot(all(kmfitbma.start2[[1]]$sigsq.eps %in% moreiterations2[[1]]$sigsq.eps))
+stopifnot(all(kmfitbma.start2[[1]]$beta[,1] %in% moreiterations2[[1]]$beta[,1]))
+stopifnot(all(kmfitbma.start2[[1]]$r[,1] %in% moreiterations2[[1]]$r[,1]))
+stopifnot(all(kmfitbma.start2[[1]]$h.hat[,1] %in% moreiterations2[[1]]$h.hat[,1]))
+stopifnot(ncol(kmfitbma.start2[[1]]$beta) == ncol(moreiterations2[[1]]$beta))
+stopifnot(ncol(kmfitbma.start2[[1]]$r) == ncol(moreiterations2[[1]]$r))
+stopifnot(ncol(kmfitbma.start2[[1]]$h.hat) == ncol(moreiterations2[[1]]$h.hat))

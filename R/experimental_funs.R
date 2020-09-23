@@ -8,7 +8,7 @@
   ver > minver
 }
 
-.add_bkmrfits <- function(fitkm.list) {
+.add_bkmrfits <- function(fitkm.list, trim=0) {
   # combine two bkmr fits of possibly different lengths
   burnin=0
   reorder=FALSE
@@ -23,21 +23,21 @@
     lst[[parm]]
   }
   getparmmat <- function(lst, parm) {
-    lst[[parm]][,,drop=FALSE]
+    lst[[parm]]
   }
   getparmvec <- function(lst, parm) {
     lst[[parm]]
   }
   for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta", "ystar")) {
     tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
-    kmoverall[[matparm]] <- tmp
+    kmoverall[[matparm]] <- tmp[-(iters[[1]] + 1),,drop=FALSE]
   }
   for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
-    kmoverall[[vecparm]] <- tmp
+    kmoverall[[vecparm]] <- tmp[-(iters[[1]] + 1)]
   }
   for (sumparm in c("iter")) {
-    kmoverall[[sumparm]] <- do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
+    kmoverall[[sumparm]] <- -1 + do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
   }
   class(kmoverall) <- c("bkmrcontfit", class(kmoverall))
   kmoverall
@@ -94,6 +94,11 @@ kmbayes_continue <- function(fit, ...){
   last.iter = fit$iter
   ending.values = sapply(names(fit$starting.values), function(x) .ensuremat(fit[[x]])[last.iter,])
   if(!fit$est.h) ending.values$h.hat = ending.values$h.hat + 1
+  if(fit$est.h){
+    cm = pmax(eps, colMeans(fit$h.hat))
+    gt0 = ending.values$h.hat>0
+    ending.values$h.hat = ending.values$h.hat*gt0 + cm*(1-gt0)
+  }
   if(!bkmrvernew){
     message("bkmr package is too old for this function to work perfectly")
     message("update via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
@@ -107,11 +112,12 @@ kmbayes_continue <- function(fit, ...){
   newargs = list(...)
   newargs = modifyList(oldargs, newargs)
   newargs = modifyList(newargs, newstart)
+  newargs$iter = newargs$iter + 1 # account for restart
   fit2 = do.call(kmbayes, newargs)
   res = list(fit, fit2)
   class(res) <- c("bkmrfit.continued", class(res))
   res
-  .add_bkmrfits(res)
+  .add_bkmrfits(res, trim=1)
 }
 
 #' Continue sampling from existing bkmr_parallel fit
