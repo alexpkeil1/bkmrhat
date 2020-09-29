@@ -7,7 +7,7 @@
   ver >= minver
 }
 
-.add_bkmrfits <- function(fitkm.list, trim=0) {
+.add_bkmrfits <- function(fitkm.list, trim=TRUE) {
   # combine two bkmr fits of possibly different lengths
   burnin=0
   reorder=FALSE
@@ -29,14 +29,18 @@
   }
   for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta", "ystar")) {
     tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
-    kmoverall[[matparm]] <- tmp[-(iters[[1]] + 1),,drop=FALSE]
+    # cut first iteration from second chain, which is just the starting values
+    if(trim) kmoverall[[matparm]] <- tmp[-(iters[[1]] + 1),,drop=FALSE]
+    if(!trim) kmoverall[[matparm]] <- tmp[,,drop=FALSE]
   }
   for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
-    kmoverall[[vecparm]] <- tmp[-(iters[[1]] + 1)]
+    if(trim) kmoverall[[vecparm]] <- tmp[-(iters[[1]] + 1)]
+    if(!trim) kmoverall[[vecparm]] <- tmp
   }
   for (sumparm in c("iter")) {
-    kmoverall[[sumparm]] <- -1 + do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
+    if(trim) kmoverall[[sumparm]] <- -1 + do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
+    if(!trim) kmoverall[[sumparm]] <- do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
   }
   class(kmoverall) <- c("bkmrfit.continued", class(kmoverall))
   kmoverall
@@ -108,8 +112,7 @@ kmbayes_continue <- function(fit, ...){
   newargs$iter = newargs$iter + 1 # account for restart
   fit2 = do.call(kmbayes, newargs)
   res = list(fit, fit2)
-  res
-  .add_bkmrfits(res, trim=1)
+  .add_bkmrfits(res, trim=TRUE)
 }
 
 #' Continue sampling from existing bkmr_parallel fit

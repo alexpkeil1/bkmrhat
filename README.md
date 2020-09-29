@@ -1,4 +1,4 @@
-`bkmrhat` v0.3.8
+`bkmrhat` v0.3.9
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![](http://www.r-pkg.org/badges/version/bkmrhat)](http://www.r-pkg.org/pkg/bkmrhat)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/bkmrhat)](http://www.r-pkg.org/pkg/bkmrhat)  [![Build Status](https://travis-ci.com/alexpkeil1/bkmrhat.svg?branch=master)](https://travis-ci.com/alexpkeil1/bkmrhat) [![codecov](https://codecov.io/gh/alexpkeil1/bkmrhat/branch/master/graph/badge.svg)](https://codecov.io/gh/alexpkeil1/bkmrhat)
