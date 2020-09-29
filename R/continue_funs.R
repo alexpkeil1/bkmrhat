@@ -83,15 +83,18 @@ kmbayes_continue <- function(fit, ...){
   last.iter = fit$iter
   ending.values = sapply(names(fit$starting.values), function(x) .ensuremat(fit[[x]])[last.iter,])
   if(!fit$est.h) ending.values$h.hat = ending.values$h.hat + 1
-  if(fit$est.h){
-    cm = pmax(eps, colMeans(fit$h.hat))
-    gt0 = ending.values$h.hat>0
-    if(sum(1-gt0)>0) message("Modifying h.hat starting values to meet kmbayes initial value constraints (this isn't a perfect continuation)")
-    ending.values$h.hat = ending.values$h.hat*gt0 + cm*(1-gt0)
-  }
   if(!bkmrvernew){
+    # using old version of bkmr
+    if(fit$est.h){
+      cm = pmax(eps, colMeans(fit$h.hat))
+      gt0 = ending.values$h.hat>0
+      if(sum(1-gt0)>0){
+        message("Modifying h.hat starting values to meet kmbayes initial value constraints (this isn't a perfect continuation)")
+      }
+      ending.values$h.hat = ending.values$h.hat*gt0 + cm*(1-gt0)
+    }
     message("Modifying r starting values to meet kmbayes initial value constraints (this isn't a perfect continuation)")
-    message("This issue can be fixed by updating bkmr via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
+    message("This issue can be fixed by updating bkmr to dev version via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
     if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[which(ending.values$delta==1)])
     if(sum(ending.values$delta)==0) ending.values$r = eps
   }

@@ -16,7 +16,7 @@ res = kmbayes_diag(moreiterations)
 
 #bkmr::TracePlot(moreiterations, par="r", comp=5)
 #bkmr::TracePlot(moreiterations, par="beta", comp=1)
-#bkmr::TracePlot(moreiterations, par="h", comp=1)
+#bkmr::TracePlot(moreiterations, par="h", comp=50)
 
 
 stopifnot(kmfitbma.start$iter<moreiterations$iter)
