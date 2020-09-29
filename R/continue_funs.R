@@ -38,7 +38,7 @@
   for (sumparm in c("iter")) {
     kmoverall[[sumparm]] <- -1 + do.call("sum", lapply(fitkm.list, FUN=getparm, parm=sumparm))
   }
-  class(kmoverall) <- c("bkmrcontfit", class(kmoverall))
+  class(kmoverall) <- c("bkmrfit.continued", class(kmoverall))
   kmoverall
 }
 
@@ -108,7 +108,6 @@ kmbayes_continue <- function(fit, ...){
   newargs$iter = newargs$iter + 1 # account for restart
   fit2 = do.call(kmbayes, newargs)
   res = list(fit, fit2)
-  class(res) <- c("bkmrfit.continued", class(res))
   res
   .add_bkmrfits(res, trim=1)
 }
