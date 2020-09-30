@@ -54,3 +54,11 @@ fitty1 = suppressWarnings(bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, iter=5, family=
 # add 3000 additional iterations
 fitty2 = suppressWarnings(kmbayes_continue(fitty1, iter=5))
 stopifnot(ncol(fitty1$ystar[,1]) %in% ncol(fitty2$ystar[,1]))
+
+
+
+# force old version
+kmfitbma.start2 = kmfitbma.start
+kmfitbma.start2$delta = kmfitbma.start2$delta*0
+moreiterations = suppressWarnings(kmbayes_continue(kmfitbma.start2, iter=20))
+res = kmbayes_diag(moreiterations)
