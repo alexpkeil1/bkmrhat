@@ -98,7 +98,7 @@ kmbayes_continue <- function(fit, ...){
       ending.values$h.hat = ending.values$h.hat*gt0 + cm*(1-gt0)
     }
     message("Modifying r starting values to meet kmbayes initial value constraints (this isn't a perfect continuation)")
-    message("This issue can be fixed by updating bkmr to dev version via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
+    message("This issue can be fixed by updating bkmr to the development version via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
     if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[which(ending.values$delta==1)])
     if(sum(ending.values$delta)==0) ending.values$r = eps
   }
