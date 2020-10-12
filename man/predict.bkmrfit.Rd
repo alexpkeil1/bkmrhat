@@ -14,7 +14,7 @@ mean prediction for every observation in the data, and "sd.fit"
 yields the posterior standard deviation for every observation in
 the data.}
 
-\item{...}{arguments to bkmr::SamplePred}
+\item{...}{arguments to \code{\link[bkmr]{SamplePred}}}
 }
 \value{
 vector of predictions the same length as the outcome in the bkmrfit object
@@ -32,7 +32,7 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 set.seed(111)
-fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 200, verbose = FALSE,
   varsel = TRUE)
 postmean = predict(fitkm)
 postmean2 = predict(fitkm, Znew=Z/2)

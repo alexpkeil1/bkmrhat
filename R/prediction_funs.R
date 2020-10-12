@@ -11,7 +11,7 @@ predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...) {
   #'  mean prediction for every observation in the data, and "sd.fit"
   #'  yields the posterior standard deviation for every observation in
   #'  the data.
-  #' @param ... arguments to bkmr::SamplePred
+  #' @param ... arguments to \code{\link[bkmr]{SamplePred}}
   #' @importFrom stats predict
   #' @importFrom bkmr SamplePred
   #' @importFrom stats sd
@@ -28,7 +28,7 @@ predict.bkmrfit <- function(object, ptype=c("mean", "sd.fit"), ...) {
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 5000, verbose = FALSE,
+  #' fitkm <- kmbayes(y = y, Z = Z, X = X, iter = 200, verbose = FALSE,
   #'   varsel = TRUE)
   #' postmean = predict(fitkm)
   #' postmean2 = predict(fitkm, Znew=Z/2)
