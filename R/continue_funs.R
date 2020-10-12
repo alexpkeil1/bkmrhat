@@ -72,10 +72,10 @@
 #' Z <- dat$Z
 #' X <- dat$X
 #' \dontrun{
-#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE)
-#' # do some diagnostics here to see if 1000 iterations (default) is enough
-#' # add 3000 additional iterations
-#' fitty2 = kmbayes_continue(fitty1, iter=3000)
+#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, tier=100)
+#' # do some diagnostics here to see if 100 iterations (default) is enough
+#' # add 100 additional iterations (for illustration - still will not be enough)
+#' fitty2 = kmbayes_continue(fitty1, iter=100)
 #' cobj = as.mcmc(fitty2)
 #' varnames(cobj)
 #'

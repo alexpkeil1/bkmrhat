@@ -1,4 +1,4 @@
-# `bkmrhat` v0.3.7
+# `bkmrhat` v1.0.0
 
 ## Major changes
 - Added parallel diagnostics and re-packaged bkmr package functions for parallel chains

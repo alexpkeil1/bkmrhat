@@ -25,7 +25,7 @@
 #' set.seed(111)
 #' Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
 #' future::plan(strategy = future::multiprocess)
-#' fitkm.list <- kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 5000,
+#' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 1000,
 #'   verbose = FALSE, varsel = TRUE)
 #' kmbayes_diag(fitkm.list)
 #' kmbayes_diag(fitkm.list[[1]]) # just the first chain
