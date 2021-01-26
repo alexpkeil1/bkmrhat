@@ -37,9 +37,9 @@ kmbayes_parallel <- function(nchains=4, ...) {
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
       bkmr::kmbayes(...)
-    })
+    }, seed=TRUE)
   }
-  res <- values(ff)
+  res <- value(ff)
   class(res) <- c("bkmrfit.list", class(res))
   res
 }

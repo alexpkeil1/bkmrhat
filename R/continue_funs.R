@@ -148,7 +148,7 @@ kmbayes_parallel_continue <- function(fitkm.list, ...) {
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
       kmbayes_continue(fitkm.list[[ii]], ...)
-    })
+    }, seed=TRUE)
   }
   res <- values(ff)
   class(res) <- c("bkmrfit.list", class(res))
