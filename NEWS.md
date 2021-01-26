@@ -1,3 +1,15 @@
+# `bkmrhat` v1.0.1
+
+## Major changes
+- N/A
+
+## Minor changes
+- Removed a warning from the future package about possibly invalid seed values (Set seed=TRUE in underlying `future` function calls, per package instructions)
+
+## Bug fixes
+- N/A
+
+
 # `bkmrhat` v1.0.0
 
 ## Major changes
