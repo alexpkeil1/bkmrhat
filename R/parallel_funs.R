@@ -33,11 +33,12 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #' closeAllConnections()
   #' }
   ff <- list()
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
       bkmr::kmbayes(...)
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   class(res) <- c("bkmrfit.list", class(res))

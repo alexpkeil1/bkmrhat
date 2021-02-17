@@ -1,3 +1,14 @@
+# `bkmrhat` v1.0.2
+
+## Major changes
+- N/A
+
+## Minor changes
+- N/A
+
+## Bug fixes
+- MAJOR: seed change in v1.0.1 introduced a bug that would result in chains having identical seeds. This is fixed. 
+
 # `bkmrhat` v1.0.1
 
 ## Major changes

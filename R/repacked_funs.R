@@ -14,6 +14,7 @@ OverallRiskSummaries_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -21,7 +22,7 @@ OverallRiskSummaries_parallel <- function(x, ...){
       df = suppressWarnings(bkmr::OverallRiskSummaries(xii, ...))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))
@@ -38,6 +39,7 @@ PredictorResponseUnivar_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -45,7 +47,7 @@ PredictorResponseUnivar_parallel <- function(x, ...){
       df = suppressWarnings(bkmr::PredictorResponseUnivar(xii, ...))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))
@@ -63,6 +65,7 @@ PredictorResponseBivar_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -70,7 +73,7 @@ PredictorResponseBivar_parallel <- function(x, ...){
       df = suppressWarnings(bkmr::PredictorResponseBivar(xii, ...))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))
@@ -88,6 +91,7 @@ SingVarRiskSummaries_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -95,7 +99,7 @@ SingVarRiskSummaries_parallel <- function(x, ...){
       df = suppressWarnings(bkmr::SingVarRiskSummaries(xii, ...))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))
@@ -137,6 +141,7 @@ ExtractPIPs_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -144,7 +149,7 @@ ExtractPIPs_parallel <- function(x, ...){
       df = suppressWarnings(data.frame(bkmr::ExtractPIPs(xii)))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))
@@ -162,6 +167,7 @@ SamplePred_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -169,7 +175,7 @@ SamplePred_parallel <- function(x, ...){
       df = suppressWarnings(as.data.frame(bkmr::SamplePred(xii, ...)))
       df$chain=ii
       df
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- value(ff)
   as.data.frame(do.call("rbind", res))

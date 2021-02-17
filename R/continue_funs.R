@@ -144,11 +144,12 @@ kmbayes_continue <- function(fit, ...){
 kmbayes_parallel_continue <- function(fitkm.list, ...) {
   ff <- list()
   nchains = length(fitkm.list)
+  ss = sample(1:.Machine$integer.max,nchains)
   for (ii in 1:nchains) {
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
       kmbayes_continue(fitkm.list[[ii]], ...)
-    }, seed=TRUE)
+    }, seed=ss[ii])
   }
   res <- values(ff)
   class(res) <- c("bkmrfit.list", class(res))
