@@ -14,6 +14,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #'
   #' @return a "bkmrfit.list" object, which is just an R list object in which each entry is a "bkmrfit" object \code{\link[bkmr]{kmbayes}}
   #' @importFrom rstan Rhat ess_bulk ess_tail
+  #' @importFrom stats runif
   #' @import future bkmr
   #' @export
   #'
