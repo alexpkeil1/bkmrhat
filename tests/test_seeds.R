@@ -7,7 +7,7 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 
-future::plan(strategy = future::multiprocess, workers=2)
+future::plan(strategy = future::sequential)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 10,
                                verbose = FALSE, varsel = TRUE)
 

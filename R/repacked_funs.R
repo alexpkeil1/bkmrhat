@@ -14,7 +14,7 @@ OverallRiskSummaries_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -39,7 +39,7 @@ PredictorResponseUnivar_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -65,7 +65,7 @@ PredictorResponseBivar_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -91,7 +91,7 @@ SingVarRiskSummaries_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -141,7 +141,7 @@ ExtractPIPs_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({
@@ -167,7 +167,7 @@ SamplePred_parallel <- function(x, ...){
   #'
   ff <- list()
   nchains = length(x)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     xii = x[[ii]]
     ff[[ii]] <- future({

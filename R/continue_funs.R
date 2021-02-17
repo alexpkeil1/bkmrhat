@@ -144,7 +144,7 @@ kmbayes_continue <- function(fit, ...){
 kmbayes_parallel_continue <- function(fitkm.list, ...) {
   ff <- list()
   nchains = length(fitkm.list)
-  ss = sample(1:.Machine$integer.max,nchains)
+  ss = round(runif(nchains) * .Machine$integer.max)
   for (ii in 1:nchains) {
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
