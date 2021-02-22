@@ -5,16 +5,20 @@
 \alias{comb_bkmrfits}
 \title{Combine multiple BKMR chains}
 \usage{
-kmbayes_combine(fitkm.list, burnin = 0, reorder = TRUE)
+kmbayes_combine(fitkm.list, burnin = 0, excludeburnin = FALSE, reorder = TRUE)
 
-comb_bkmrfits(fitkm.list, burnin = 0, reorder = TRUE)
+comb_bkmrfits(fitkm.list, burnin = 0, excludeburnin = FALSE, reorder = TRUE)
 }
 \arguments{
 \item{fitkm.list}{output from \code{\link[bkmrhat]{kmbayes_parallel}}}
 
-\item{burnin}{add in custom burnin (number of burnin iterations per chain)}
+\item{burnin}{(numeric, or default=NULL) add in custom burnin (number of burnin iterations per chain).
+If NULL, then default to half of the chain}
 
-\item{reorder}{ensures that the first half of the combined chain contains
+\item{excludeburnin}{(logical, default=FALSE) should burnin iterations be excluded from the final chains?
+Note that all bkmr package functions automatically exclude burnin from calculations.}
+
+\item{reorder(logical, }{default=TRUE) ensures that the first half of the combined chain contains
 only the first half of each individual chain - this allows unaltered use
 of standard functions from bkmr package, which automatically trims the first
 half of the iterations. This can be used for posterior summaries, but
@@ -51,8 +55,8 @@ future::plan(strategy = future::multiprocess, workers=2)
 # run 4 parallel Markov chains (low iterations used for illustration)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   verbose = FALSE, varsel = TRUE)
-bigkm = kmbayes_combine(fitkm.list)
-ests = ExtractEsts(bigkm)
+bigkm = kmbayes_combine(fitkm.list, excludeburnin=FALSE) # use bkmr defaults for burnin, but keep them
+ests = ExtractEsts(bigkm) # defaults to keeping second half of samples
 ExtractPIPs(bigkm)
 pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)
 risks.overall <- OverallRiskSummaries(fit = bigkm, y = y, Z = Z, X = X,

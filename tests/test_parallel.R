@@ -23,3 +23,8 @@ closeAllConnections()
 future::plan(strategy = future::multiprocess, workers=2)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 10,
                                verbose = FALSE, varsel = TRUE)
+
+kmbayes_combine(fitkm.list, burnin=0)
+kmbayes_combine(fitkm.list, burnin=8, reorder = TRUE, excludeburnin=FALSE)
+kmbayes_combine(fitkm.list, burnin=8, reorder = TRUE, excludeburnin=TRUE)
+kmbayes_combine(fitkm.list, burnin=8, reorder = FALSE, excludeburnin=TRUE)

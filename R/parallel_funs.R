@@ -15,7 +15,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #' @return a "bkmrfit.list" object, which is just an R list object in which each entry is a "bkmrfit" object \code{\link[bkmr]{kmbayes}}
   #' @importFrom rstan Rhat ess_bulk ess_tail
   #' @importFrom stats runif
-  #' @importFrom future value
+  # #' @importFrom future value
   #' @import future bkmr
   #' @export
   #'
@@ -42,12 +42,12 @@ kmbayes_parallel <- function(nchains=4, ...) {
       bkmr::kmbayes(...)
     }, seed=ss[ii])
   }
-  res <- value(ff)
+  res <- future::value(ff)
   class(res) <- c("bkmrfit.list", class(res))
   res
 }
 
-kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
+kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=TRUE) {
   #' Combine multiple BKMR chains
   #'
   #' @description Combine multiple chains comprising BKMR fits at different starting
@@ -56,8 +56,11 @@ kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' @details Chains are not combined fully sequentially
   #'
   #' @param fitkm.list output from \code{\link[bkmrhat]{kmbayes_parallel}}
-  #' @param burnin add in custom burnin (number of burnin iterations per chain)
-  #' @param reorder ensures that the first half of the combined chain contains
+  #' @param burnin (numeric, or default=NULL) add in custom burnin (number of burnin iterations per chain).
+  #' If NULL, then default to half of the chain
+  #' @param excludeburnin (logical, default=FALSE) should burnin iterations be excluded from the final chains?
+  #' Note that all bkmr package functions automatically exclude burnin from calculations.
+  #' @param reorder(logical, default=TRUE) ensures that the first half of the combined chain contains
   #'  only the first half of each individual chain - this allows unaltered use
   #'  of standard functions from bkmr package, which automatically trims the first
   #'  half of the iterations. This can be used for posterior summaries, but
@@ -87,8 +90,8 @@ kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   #'   verbose = FALSE, varsel = TRUE)
-  #' bigkm = kmbayes_combine(fitkm.list)
-  #' ests = ExtractEsts(bigkm)
+  #' bigkm = kmbayes_combine(fitkm.list, excludeburnin=FALSE) # use bkmr defaults for burnin, but keep them
+  #' ests = ExtractEsts(bigkm) # defaults to keeping second half of samples
   #' ExtractPIPs(bigkm)
   #' pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)
   #' risks.overall <- OverallRiskSummaries(fit = bigkm, y = y, Z = Z, X = X,
@@ -109,16 +112,18 @@ kmbayes_combine <- function(fitkm.list, burnin=0, reorder=TRUE) {
   # "starting.values", "control.params", "X", "Z", "y", "ztest", "data.comps", "varsel")
   kmoverall$chain <- rep(1:nchains, each=kmIter)
   kmoverall$iters <- rep(1:kmIter, times=nchains)
-  autoburn <- which(kmoverall$iters <= ceiling(kmIter/2))
-  autonotburn <- which(kmoverall$iters > ceiling(kmIter/2))
+  burnend <- ifelse(is.null(burnin), ceiling(kmIter/2), burnin)
+  autoburn <- which(kmoverall$iters <= burnend)
+  if(excludeburnin) autoburn = integer(0L)
+  autonotburn <- which(kmoverall$iters > burnend)
   getparm <- function(lst, parm) {
     lst[[parm]]
   }
   getparmmat <- function(lst, parm) {
-    lst[[parm]][(burnin+1):kmIter, , drop=FALSE]
+    lst[[parm]]#[(burnin+1):kmIter, , drop=FALSE]
   }
   getparmvec <- function(lst, parm) {
-    lst[[parm]][(burnin+1):kmIter]
+    lst[[parm]]#[(burnin+1):kmIter]
   }
   for (matparm in c("h.hat", "beta", "lambda", "r", "acc.r", "acc.lambda", "delta", "ystar")) {
     tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
