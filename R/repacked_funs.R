@@ -10,6 +10,7 @@ OverallRiskSummaries_parallel <- function(x, ...){
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr OverallRiskSummaries
+  #' @importFrom future value
   #' @importFrom stats runif
   #' @export
   #'
@@ -37,6 +38,7 @@ PredictorResponseUnivar_parallel <- function(x, ...){
   #' @return data.frame with all chains together
   #' @importFrom bkmr PredictorResponseUnivar
   #' @importFrom stats runif
+  #' @importFrom future value
   #' @export
   #'
   ff <- list()
@@ -64,6 +66,7 @@ PredictorResponseBivar_parallel <- function(x, ...){
   #' @return data.frame with all chains together
   #' @importFrom bkmr PredictorResponseBivar
   #' @importFrom stats runif
+  #' @importFrom future value
   #' @export
   #'
   ff <- list()
@@ -90,6 +93,7 @@ SingVarRiskSummaries_parallel <- function(x, ...){
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr SingVarRiskSummaries
+  #' @importFrom future value
   #' @importFrom stats runif
   #' @export
   #'
@@ -141,6 +145,7 @@ ExtractPIPs_parallel <- function(x, ...){
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr ExtractPIPs
+  #' @importFrom future value
   #' @importFrom stats runif
   #' @export
   #'
@@ -168,6 +173,7 @@ SamplePred_parallel <- function(x, ...){
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr SamplePred
+  #' @importFrom future value
   #' @importFrom stats runif
   #' @export
   #'

@@ -122,6 +122,7 @@ kmbayes_continue <- function(fit, ...){
 #' @param ... arguments to \code{\link[bkmrhat]{kmbayes_continue}}
 #'
 #' @return a `bkmrfit.list` object, which is just a list of `bkmrfit` objects similar to \code{\link[bkmrhat]{kmbayes_parallel}}
+#' @importFrom future value
 #' @export
 #' @seealso \code{\link[bkmrhat]{kmbayes_parallel}}
 #' @import future
@@ -151,7 +152,7 @@ kmbayes_parallel_continue <- function(fitkm.list, ...) {
       kmbayes_continue(fitkm.list[[ii]], ...)
     }, seed=ss[ii])
   }
-  res <- values(ff)
+  res <- value(ff)
   class(res) <- c("bkmrfit.list", class(res))
   res
 }
