@@ -60,7 +60,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
   #' If NULL, then default to half of the chain
   #' @param excludeburnin (logical, default=FALSE) should burnin iterations be excluded from the final chains?
   #' Note that all bkmr package functions automatically exclude burnin from calculations.
-  #' @param reorder(logical, default=TRUE) ensures that the first half of the combined chain contains
+  #' @param reorder (logical, default=TRUE) ensures that the first half of the combined chain contains
   #'  only the first half of each individual chain - this allows unaltered use
   #'  of standard functions from bkmr package, which automatically trims the first
   #'  half of the iterations. This can be used for posterior summaries, but
@@ -90,7 +90,8 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   #'   verbose = FALSE, varsel = TRUE)
-  #' bigkm = kmbayes_combine(fitkm.list, excludeburnin=FALSE) # use bkmr defaults for burnin, but keep them
+  #' # use bkmr defaults for burnin, but keep them
+  #' bigkm = kmbayes_combine(fitkm.list, excludeburnin=FALSE)
   #' ests = ExtractEsts(bigkm) # defaults to keeping second half of samples
   #' ExtractPIPs(bigkm)
   #' pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)
