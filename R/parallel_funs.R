@@ -47,7 +47,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   res
 }
 
-kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=TRUE) {
+kmbayes_combine <- function(fitkm.list, burnin=NULL, excludeburnin=FALSE, reorder=TRUE) {
   #' Combine multiple BKMR chains
   #'
   #' @description Combine multiple chains comprising BKMR fits at different starting
@@ -113,6 +113,9 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
   # "starting.values", "control.params", "X", "Z", "y", "ztest", "data.comps", "varsel")
   kmoverall$chain <- rep(1:nchains, each=kmIter)
   kmoverall$iters <- rep(1:kmIter, times=nchains)
+  for(kmfitidx in 1:nchains){
+    fitkm.list[[kmfitidx]]$iters <- 1:kmIter
+  }
   burnend <- ifelse(is.null(burnin), ceiling(kmIter/2), burnin)
   autoburn <- which(kmoverall$iters <= burnend)
   if(excludeburnin) autoburn = integer(0L)
@@ -131,7 +134,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
     kmoverall[[matparm]] <- rbind(tmp[autoburn, , drop=FALSE],
                                   tmp[autonotburn, , drop=FALSE])
   }
-  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type")) {
+  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
     kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
   }
@@ -146,7 +149,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
 #' @export
 comb_bkmrfits <- kmbayes_combine
 
-kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=TRUE) {
+kmbayes_combine_lowmem <- function(fitkm.list, burnin=NULL, excludeburnin=FALSE, reorder=TRUE) {
   #' Combine multiple BKMR chains in lower memory settings
   #'
   #' @description Combine multiple chains comprising BKMR fits at different starting
@@ -215,6 +218,9 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   # "starting.values", "control.params", "X", "Z", "y", "ztest", "data.comps", "varsel")
   kmoverall$chain <- rep(1:nchains, each=kmIter)
   kmoverall$iters <- rep(1:kmIter, times=nchains)
+  for(kmfitidx in 1:nchains){
+    fitkm.list[[kmfitidx]]$iters <- 1:kmIter
+  }
   burnend <- ifelse(is.null(burnin), ceiling(kmIter/2), burnin)
   autoburn <- which(kmoverall$iters <= burnend)
   if(excludeburnin) autoburn = integer(0L)
@@ -261,7 +267,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
                                   tmp[autonotburn, , drop=FALSE])
     rm("tmp")
   }
-  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type")) {
+  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
     kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
     rm("tmp")

@@ -4,6 +4,7 @@
 - N/A
 
 ## Minor changes
+- Change burnin default to NULL in kmbayes_combine (was 0) to fit typical usage pattern and match documentation
 - Added kmbayes_combine_lowmem function, which emulates kmbayes_combine and may work in certain settings where memory constraints result in a "low memory" error in kmbayes_combine.
 
 ## Bug fixes
