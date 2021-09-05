@@ -40,7 +40,7 @@ There is some overhead in parallel processing when using the `future` package, s
 ```{r 1 vs 1+ chains, cache=FALSE, results='markup'}
 
 # enable parallel processing (up to 4 simultaneous processes here)
-future::plan(strategy = future::multiprocess, workers=4, .skip=TRUE)
+future::plan(strategy = future::multiprocess)
 
 # single run of 4000 observations from bkmr package
 set.seed(111)
