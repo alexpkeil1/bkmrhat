@@ -7,14 +7,14 @@
 \usage{
 kmbayes_combine_lowmem(
   fitkm.list,
-  burnin = 0,
+  burnin = NULL,
   excludeburnin = FALSE,
   reorder = TRUE
 )
 
 comb_bkmrfits_lowmem(
   fitkm.list,
-  burnin = 0,
+  burnin = NULL,
   excludeburnin = FALSE,
   reorder = TRUE
 )

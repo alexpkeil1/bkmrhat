@@ -5,9 +5,14 @@
 \alias{comb_bkmrfits}
 \title{Combine multiple BKMR chains}
 \usage{
-kmbayes_combine(fitkm.list, burnin = 0, excludeburnin = FALSE, reorder = TRUE)
+kmbayes_combine(
+  fitkm.list,
+  burnin = NULL,
+  excludeburnin = FALSE,
+  reorder = TRUE
+)
 
-comb_bkmrfits(fitkm.list, burnin = 0, excludeburnin = FALSE, reorder = TRUE)
+comb_bkmrfits(fitkm.list, burnin = NULL, excludeburnin = FALSE, reorder = TRUE)
 }
 \arguments{
 \item{fitkm.list}{output from \code{\link[bkmrhat]{kmbayes_parallel}}}
