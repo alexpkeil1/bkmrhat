@@ -23,7 +23,6 @@ First, simulate some data from the `bkmr` function
 library("bkmr")
 library("bkmrhat")
 library("coda")
-Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet") # for future package
 
 set.seed(111)
 dat <- bkmr::SimData(n = 50, M = 5, ind=1:3, Zgen="realistic")
