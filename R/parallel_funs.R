@@ -229,14 +229,31 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
     lst[[parm]]
   }
   for (matparm in c("h.hat", "ystar")) {
-    tf = tempfile()
+    tfa = tempfile()
+    tfb = tempfile()
     for(k in 1:nchains){
-      tmp = as.data.table(getparmmat(fitkm.list[[k]], parm=matparm))
-      if(k == 1) fwrite(tmp, file = tf, row.names=FALSE, verbose=FALSE)
-      if(k > 1) fwrite(tmp, file = tf, append=TRUE, verbose=FALSE)
-      rm("tmp")
+      tmp = getparmmat(fitkm.list[[k]], parm=matparm)
+      if(!is.null(tmp)){
+        tmp = as.data.table(tmp)
+        if(k == 1){
+          fwrite(tmp[autoburn, , drop=FALSE], file = tfa, row.names=FALSE, verbose=FALSE)
+          fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, row.names=FALSE, verbose=FALSE)
+        }
+        if(k > 1){
+          fwrite(tmp[autoburn, , drop=FALSE], file = tfa, append=TRUE, verbose=FALSE)
+          fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, append=TRUE, verbose=FALSE)
+        }
+      }
     }
-    kmoverall[[matparm]] <- as.matrix(fread(tf, header=FALSE))
+    if(!is.null(tmp)){
+      kmoverall[[matparm]] <- rbind(
+        as.matrix(fread(tfa, header=FALSE)),
+        as.matrix(fread(tfb, header=FALSE))
+      )
+    }else{
+      kmoverall[[matparm]] <- tmp
+    }
+    rm("tmp")
   }
   for (matparm in c("beta", "lambda", "r", "acc.r", "acc.lambda", "delta")) {
     tmp <- do.call("rbind", lapply(fitkm.list, FUN=getparmmat, parm=matparm))
@@ -245,7 +262,6 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
     rm("tmp")
   }
   for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
-    print(vecparm)
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
     kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
     rm("tmp")
