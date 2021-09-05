@@ -27,7 +27,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' 
+  #'
   #' future::plan(strategy = future::multisession, workers=2)
   #' # only 50 iterations fit to save installation time
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 50,
@@ -85,7 +85,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' 
+  #'
   #' future::plan(strategy = future::multisession, workers=2)
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
@@ -168,12 +168,13 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   #'  certain diagnostics may not work well (autocorrelation, effective sample size)
   #'  so the diagnostics should be done on the individual chains
   #'  #' @param ... arguments to \code{\link[bkmrhat]{as.mcmc.bkmrfit}}
-  
+
   #' @return a \code{bkmrplusfit} object, which inherits from \code{bkmrfit}
   #' (from the \code{\link[bkmr]{kmbayes}} function)
   #' with multiple chains combined into a single object and additional parameters
   #' given by \code{chain} and \code{iters}, which index the specific chains and
   #' iterations for each posterior sample in the \code{bkmrplusfit} object
+  #' @importFrom data.table fwrite fread as.data.table
   #' @export
   #' @name kmbayes_combine_lowmem
   #' @examples
@@ -186,7 +187,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   #' Z <- dat$Z
   #' X <- dat$X
   #' set.seed(111)
-  #' 
+  #'
   #' future::plan(strategy = future::multisession, workers=2)
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
@@ -205,6 +206,8 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   #' }
   #'
   #' closeAllConnections()
+  #'
+  kmoverall <- fitkm.list[[1]]
   nchains <- length(fitkm.list)
   kmIter <- length(kmoverall$sigsq.eps)
   #c("h.hat", "beta", "lambda", "sigsq.eps", "r", "acc.r", "acc.lambda", "delta",
@@ -228,7 +231,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   for (matparm in c("h.hat", "ystar")) {
     tf = tempfile()
     for(k in 1:nchains){
-      tmp = getparmmat(fitkm.list[[k]], parm=matparm)
+      tmp = as.data.table(getparmmat(fitkm.list[[k]], parm=matparm))
       if(k == 1) fwrite(tmp, file = tf, row.names=FALSE, verbose=FALSE)
       if(k > 1) fwrite(tmp, file = tf, append=TRUE, verbose=FALSE)
       rm("tmp")

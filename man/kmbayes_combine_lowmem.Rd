@@ -81,4 +81,5 @@ table(bigkm$chain)
 }
 
 closeAllConnections()
+
 }
