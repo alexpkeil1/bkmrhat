@@ -30,7 +30,7 @@ Z <- dat$Z
 X <- dat$X
 set.seed(111)
 
-future::plan(strategy = future::multiprocess)
+future::plan(strategy = future::multisession)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 1000,
   verbose = FALSE, varsel = TRUE)
 kmbayes_diag(fitkm.list)

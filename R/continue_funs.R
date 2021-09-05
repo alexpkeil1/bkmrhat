@@ -135,7 +135,7 @@ kmbayes_continue <- function(fit, ...){
 #' X <- dat$X
 #' \dontrun{
 #' 
-#' future::plan(strategy = future::multiprocess, workers=2)
+#' future::plan(strategy = future::multisession, workers=2)
 #' fitty1p = kmbayes_parallel(nchains=2, y=y,Z=Z,X=X)
 #'
 #' fitty2p = kmbayes_parallel_continue(fitty1p, iter=3000)

@@ -51,7 +51,7 @@ Z <- dat$Z
 X <- dat$X
 set.seed(111)
 
-future::plan(strategy = future::multiprocess, workers=2)
+future::plan(strategy = future::multisession, workers=2)
 # run 4 parallel Markov chains (low iterations used for illustration)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   verbose = FALSE, varsel = TRUE)

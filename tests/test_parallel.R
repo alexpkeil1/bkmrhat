@@ -20,7 +20,7 @@ comb_bkmrfits(fitkm.list)
 kmbayes_diag(fitkm.list)
 closeAllConnections()
 
-future::plan(strategy = future::multiprocess, workers=2)
+future::plan(strategy = future::multisession, workers=2)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 10,
                                verbose = FALSE, varsel = TRUE)
 

@@ -28,7 +28,7 @@ kmbayes_parallel <- function(nchains=4, ...) {
   #' X <- dat$X
   #' set.seed(111)
   #' 
-  #' future::plan(strategy = future::multiprocess, workers=2)
+  #' future::plan(strategy = future::multisession, workers=2)
   #' # only 50 iterations fit to save installation time
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 50,
   #'   verbose = FALSE, varsel = TRUE)
@@ -86,7 +86,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
   #' X <- dat$X
   #' set.seed(111)
   #' 
-  #' future::plan(strategy = future::multiprocess, workers=2)
+  #' future::plan(strategy = future::multisession, workers=2)
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   #'   verbose = FALSE, varsel = TRUE)
@@ -187,7 +187,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   #' X <- dat$X
   #' set.seed(111)
   #' 
-  #' future::plan(strategy = future::multiprocess, workers=2)
+  #' future::plan(strategy = future::multisession, workers=2)
   #' # run 4 parallel Markov chains (low iterations used for illustration)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   #'   verbose = FALSE, varsel = TRUE)

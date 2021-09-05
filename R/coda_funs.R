@@ -81,7 +81,7 @@ as.mcmc.list.bkmrfit.list <- function(x, ...) {
   #' X <- dat$X
   #' set.seed(111)
   #' 
-  #' future::plan(strategy = future::multiprocess, workers=2)
+  #' future::plan(strategy = future::multisession, workers=2)
   #' # run 2 parallel Markov chains (more usually better)
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 1000,
   #'   verbose = FALSE, varsel = FALSE)

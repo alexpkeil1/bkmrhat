@@ -29,7 +29,7 @@ Z <- dat$Z
 X <- dat$X
 set.seed(111)
 
-future::plan(strategy = future::multiprocess, workers=2)
+future::plan(strategy = future::multisession, workers=2)
 # only 50 iterations fit to save installation time
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 50,
   verbose = FALSE, varsel = TRUE)
