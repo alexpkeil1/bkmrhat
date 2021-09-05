@@ -19,7 +19,7 @@ vignette: >
 3. Perform posterior summaries using `coda` functions or combine chains from a `kmbayes_parallel` fit using `kmbayes_combine`. Final posterior inferences can be made on the combined object, which enables use of `bkmr` package functions for visual summaries of independent and joint effects of exposures in the `bkmr` model.
 
 First, simulate some data from the `bkmr` function
-```{r metals data, echo=TRUE, results='markup', message=FALSE}
+```{r metals_data, echo=TRUE, results='markup', message=FALSE}
 library("bkmr")
 library("bkmrhat")
 library("coda")
@@ -56,7 +56,7 @@ system.time(kmfit5 <- suppressMessages(kmbayes_parallel(nchains=4, y = y, Z = Z,
 ### Example 2: Diagnostics
 
 The diagnostics from the rstan package come from the `monitor` function (see the help files for that function in the rstan pacakge)
-```{r diagnostics 1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r diagnostics_1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # Using rstan functions (set burnin/warmup to zero for comparability with coda numbers given later
 #  posterior summaries should be performed after excluding warmup/burnin)
@@ -76,7 +76,7 @@ traceplot(kmfitcoda)
 The trace plots look typical, and fine, but trace plots don't give a full picture of convergence. Note that there is apparent quick convergence for a couple of parameters demonstrated by movement away from the starting value and concentration of the rest of the samples within a narrow band.
 
 Seeing visual evidence that different chains are sampling from the same marginal distributions is reassuring about the stability of the results.
-```{r diagnostics 2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r diagnostics_2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # multiple chain trace plot
 traceplot(kmfit5coda)
@@ -84,7 +84,7 @@ traceplot(kmfit5coda)
 
 
 Now examine "cross correlation", which can help identify highly correlated parameters in the posterior, which can be problematic for MCMC sampling. Here there is a block {r3,r4,r5} which appear to be highly correlated. All other things equal, having highly correlated parameters in the posterior means that more samples are needed than would be needed with uncorrelated parameters.
-```{r diagnostics 2b, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r diagnostics_2b, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # multiple cross-correlation plot (combines all samples)
 crosscorr(kmfit5coda)
@@ -92,7 +92,7 @@ crosscorr.plot(kmfit5coda)
 ```
 
 Now examine "autocorrelation" to identify parameters that have high correlation between subsequent iterations of the MCMC sampler, which can lead to inefficient MCMC sampling. All other things equal, having highly autocorrelated parameters in the posterior means that more samples are needed than would be needed with low-autocorrelation parameters.
-```{r diagnostics 2c, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r diagnostics_2c, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # multiple chain trace plot
 #autocorr(kmfit5coda) # lots of output
@@ -105,7 +105,7 @@ Graphical tools can be limited, and are sometimes difficult to use effectively w
 Gelman's r-hat diagnostic gives an interpretable diagnostic: the expected reduction in the standard error of the posterior means if you could run the chains to an infinite size. These give some idea about when is a fine idea to stop sampling. There are rules of thumb about using r-hat to stop sampling that are available from several authors (for example you can consult the help files for `rstan` and `coda`).
 
 Effective sample size is also useful - it estimates the amount of information in your chain, expressed in terms of the number of independent posterior samples it would take to match that information (e.g. if we could just sample from the posterior directly).
-```{r diagnostics 3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r diagnostics_3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # Gelman's r-hat using coda estimator (will differ from rstan implementation)
 gelman.diag(kmfit5coda)
@@ -121,13 +121,13 @@ effectiveSize(kmfit5coda)
 
 ### Example 3: Posterior summaries
 Posterior kernel marginal densities, 1 chain
-```{r post summaries 1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r post_summaries_1, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 # posterior kernel marginal densities using `mcmc` and `mcmc` objects
 densplot(kmfitcoda)
 ```
 
 Posterior kernel marginal densities, multiple chains combined. Look for multiple modes that may indicate non-convergence of some chains
-```{r post summaries 2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r post_summaries_2, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 # posterior kernel marginal densities using `mcmc` and `mcmc` objects
 densplot(kmfit5coda)
 ```
@@ -140,7 +140,7 @@ Finally, the chains from the original `kmbayes_parallel` fit can be combined int
 
 With this combined set of samples, you can follow any of the post-processing functions from the `bkmr` functions, which are described here: https://jenfb.github.io/bkmr/overview.html. For example, see below the estimation of the posterior mean difference along a series of quantiles of all exposures in Z.
 
-```{r post summaries 3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r post_summaries_3, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 # posterior summaries using `mcmc` and `mcmc` objects
 summary(kmfitcoda)
@@ -210,7 +210,7 @@ with(mean.difference2, {
 
 ### Example 5: Parallel posterior summaries as diagnostics
 `bkmrhat` also has ported versions of the native posterior summarization functions to compare how these summaries vary across parallel chains. Note that these should serve as diagnostics, and final posterior inference should be done on the combined chain. The easiest of these functions to demonstrate is the `OverallRiskSummaries_parallel` function, which simply runs `OverallRiskSummaries` (from the `bkmr` package) on each chain and combines the results. Notably, this function fixes the y-axis at zero for the median, so it under-represents overall predictive variation across chains, but captures variation in effect estimates across the chains. Ideally, that variation is negligible - e.g. if you see differences between chains that would result in different interpretations, you should re-fit the model with more iterations. In this example, the results are reasonably consistent across chains, but one might want to run more iterations if, say, the differences seen across the upper error bounds are of such a magnitude as to be practically meaningful.
-```{r post diagnostics, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
+```{r post_diagnostics, results='markup', fig.show='hold', fig.height=5, fig.width=7.5, cache=FALSE}
 
 set.seed(111)
 system.time(kmfitbma.list <- suppressWarnings(kmbayes_parallel(nchains=4, y = y, Z = Z, X = X, iter = 1000, verbose = FALSE, varsel = TRUE)))
