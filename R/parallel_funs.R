@@ -131,7 +131,7 @@ kmbayes_combine <- function(fitkm.list, burnin=0, excludeburnin=FALSE, reorder=T
     kmoverall[[matparm]] <- rbind(tmp[autoburn, , drop=FALSE],
                                   tmp[autonotburn, , drop=FALSE])
   }
-  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
+  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
     kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
   }
@@ -261,7 +261,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
                                   tmp[autonotburn, , drop=FALSE])
     rm("tmp")
   }
-  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type", "iters")) {
+  for (vecparm in c("sigsq.eps", "acc.rdelta", "move.type")) {
     tmp <- do.call("c", lapply(fitkm.list, FUN=getparmvec, parm=vecparm))
     kmoverall[[vecparm]] <- c(tmp[autoburn], tmp[autonotburn])
     rm("tmp")
