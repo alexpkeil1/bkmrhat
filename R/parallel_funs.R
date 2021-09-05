@@ -99,7 +99,7 @@ kmbayes_combine <- function(fitkm.list, burnin=NULL, excludeburnin=FALSE, reorde
   #'   qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
   #'
   #' # additional objects that are not in a standard bkmrfit object:
-  #' summary(bigkm$iters)
+  #' summary(bigkm$iters) # note that this reflects how fits are re-ordered to reflect burnin
   #' table(bigkm$chain)
   #' }
   #'
@@ -204,7 +204,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=NULL, excludeburnin=FALSE,
   #'   qs = seq(0.25, 0.75, by = 0.05), q.fixed = 0.5, method = "exact")
   #'
   #' # additional objects that are not in a standard bkmrfit object:
-  #' summary(bigkm$iters)
+  #' summary(bigkm$iters) # note that this reflects how fits are re-ordered to reflect burnin
   #' table(bigkm$chain)
   #' }
   #'
