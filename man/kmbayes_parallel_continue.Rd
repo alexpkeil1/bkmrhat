@@ -24,7 +24,7 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 \dontrun{
-Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
+
 future::plan(strategy = future::multiprocess, workers=2)
 fitty1p = kmbayes_parallel(nchains=2, y=y,Z=Z,X=X)
 

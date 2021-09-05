@@ -28,7 +28,7 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 set.seed(111)
-Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
+
 future::plan(strategy = future::multiprocess, workers=2)
 # only 50 iterations fit to save installation time
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 50,

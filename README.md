@@ -26,7 +26,7 @@ Note that this package functions best using the development verision of the bkmr
 	Z <- dat$Z
 	X <- dat$X
 	set.seed(111)
-	Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
+	
 
 #### fit BKMR model via four parallel MCMC chains (10,000 iterations total)
 	future::plan(strategy = future::multiprocess)

@@ -7,7 +7,7 @@ y <- rbinom(100, 1, expit(dat$y))
 Z <- dat$Z
 X <- dat$X
 set.seed(111)
-Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE="quiet")
+
 future::plan(strategy = future::sequential)
 fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 10,
                                verbose = FALSE, varsel = TRUE, family="binomial")
