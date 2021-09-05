@@ -1,3 +1,14 @@
+# `bkmrhat` v1.1.0
+
+## Major changes
+- N/A
+
+## Minor changes
+- Added kmbayes_combine_lowmem function, which emulates kmbayes_combine and may work in certain settings where memory constraints result in a "low memory" error in kmbayes_combine.
+
+## Bug fixes
+- MINOR: fixed "iters" objects in kmbayes_combine and kmbayes_combine_lowmem output ("bkmrplusfit" objects)
+
 # `bkmrhat` v1.0.2
 
 ## Major changes
