@@ -192,7 +192,7 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=0, excludeburnin=FALSE, re
   #' fitkm.list <- kmbayes_parallel(nchains=2, y = y, Z = Z, X = X, iter = 500,
   #'   verbose = FALSE, varsel = TRUE)
   #' # use bkmr defaults for burnin, but keep them
-  #' bigkm = kmbayes_combine(fitkm.list, excludeburnin=FALSE)
+  #' bigkm = kmbayes_combine_lowmem(fitkm.list, excludeburnin=FALSE)
   #' ests = ExtractEsts(bigkm) # defaults to keeping second half of samples
   #' ExtractPIPs(bigkm)
   #' pred.resp.univar <- PredictorResponseUnivar(fit = bigkm)
