@@ -1,7 +1,7 @@
 Package: bkmrhat
 Title: Parallel Chain Tools for Bayesian Kernel Machine Regression
-Version: 1.1.0
-Date: 2021-09-06
+Version: 1.1.1
+Date: 2021-09-07
 Authors@R: 
     person(given = "Alexander",
            family = "Keil",
@@ -35,6 +35,5 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 Language: en-US
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
