@@ -1,8 +1,7 @@
 Package: bkmrhat
-Title: Parallel Chain Tools for Bayesian Kernel Machine
-    Regression
+Title: Parallel Chain Tools for Bayesian Kernel Machine Regression
 Version: 1.1.0
-Date: 2021-02-22
+Date: 2021-09-06
 Authors@R: 
     person(given = "Alexander",
            family = "Keil",
@@ -10,16 +9,16 @@ Authors@R:
            email = "akeil@unc.edu")
 Author: Alexander Keil [aut, cre]
 Maintainer: Alexander Keil <akeil@unc.edu>
-Description: Bayesian kernel machine regression (from the 'bkmr'
-    package) is a Bayesian semi-parametric generalized linear model
-    approach under identity and probit links. There are a number of
-    functions in this package that extend Bayesian kernel machine
-    regression fits to allow multiple-chain inference and diagnostics,
-    which leverage functions from the 'future', 'rstan', and 'coda'
-    packages.  Reference: Bobb, J. F., Henn, B. C., Valeri, L., & Coull,
-    B. A. (2018). Statistical software for analyzing the health effects of
-    multiple concurrent exposures via Bayesian kernel machine regression.
-    ; <doi:10.1186/s12940-018-0413-y>.
+Description: Bayesian kernel machine regression (from the 'bkmr' package)
+    is a Bayesian semi-parametric generalized linear model approach under
+    identity and probit links. There are a number of functions in this
+    package that extend Bayesian kernel machine regression fits to allow
+    multiple-chain inference and diagnostics, which leverage functions
+    from the 'future', 'rstan', and 'coda' packages.  Reference: Bobb, J.
+    F., Henn, B. C., Valeri, L., & Coull, B. A. (2018). Statistical
+    software for analyzing the health effects of multiple concurrent
+    exposures via Bayesian kernel machine regression. ;
+    <doi:10.1186/s12940-018-0413-y>.
 License: GPL (>= 3)
 Depends: 
     coda,
@@ -27,8 +26,7 @@ Depends:
 Imports: 
     bkmr,
     future,
-    rstan,
-    data.table
+    rstan
 Suggests: 
     knitr,
     markdown

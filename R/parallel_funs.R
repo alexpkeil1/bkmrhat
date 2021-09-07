@@ -240,14 +240,14 @@ kmbayes_combine_lowmem <- function(fitkm.list, burnin=NULL, excludeburnin=FALSE,
     for(k in 1:nchains){
       tmp = getparmmat(fitkm.list[[k]], parm=matparm)
       if(!is.null(tmp)){
-        tmp = as.data.table(tmp)
+        tmp = data.table::as.data.table(tmp)
         if(k == 1){
-          fwrite(tmp[autoburn, , drop=FALSE], file = tfa, row.names=FALSE, verbose=FALSE)
-          fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, row.names=FALSE, verbose=FALSE)
+          data.table::fwrite(tmp[autoburn, , drop=FALSE], file = tfa, row.names=FALSE, verbose=FALSE)
+          data.table::fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, row.names=FALSE, verbose=FALSE)
         }
         if(k > 1){
-          fwrite(tmp[autoburn, , drop=FALSE], file = tfa, append=TRUE, verbose=FALSE)
-          fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, append=TRUE, verbose=FALSE)
+          data.table::fwrite(tmp[autoburn, , drop=FALSE], file = tfa, append=TRUE, verbose=FALSE)
+          data.table::fwrite(tmp[autonotburn, , drop=FALSE], file = tfb, append=TRUE, verbose=FALSE)
         }
       }
     }
