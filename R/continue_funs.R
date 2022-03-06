@@ -2,7 +2,7 @@
   #' @importFrom utils packageVersion
   ver = packageVersion('bkmr')[[1]]
   if(print) message(paste('bkmr package version', ver))
-  minver = list(c(0L,2L,9000L))
+  minver = list(c(0L,2L,1L))
   class(minver) = c("package_version", "numeric_version")
   ver >= minver
 }
@@ -72,7 +72,7 @@
 #' Z <- dat$Z
 #' X <- dat$X
 #' \dontrun{
-#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, tier=100)
+#' fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, iter=100)
 #' # do some diagnostics here to see if 100 iterations (default) is enough
 #' # add 100 additional iterations (for illustration - still will not be enough)
 #' fitty2 = kmbayes_continue(fitty1, iter=100)
@@ -98,7 +98,7 @@ kmbayes_continue <- function(fit, ...){
       ending.values$h.hat = ending.values$h.hat*gt0 + cm*(1-gt0)
     }
     message("Modifying r starting values to meet kmbayes initial value constraints (this isn't a perfect continuation)")
-    message("This issue can be fixed by updating bkmr to the development version via: install.packages('devtools'); devtools::install_github('jenfb/bkmr')")
+    message("This issue can be fixed by updating bkmr to the latest version")
     if(sum(ending.values$delta)>0) ending.values$r = mean(ending.values$r[which(ending.values$delta==1)])
     if(sum(ending.values$delta)==0) ending.values$r = eps
   }
@@ -134,7 +134,7 @@ kmbayes_continue <- function(fit, ...){
 #' Z <- dat$Z
 #' X <- dat$X
 #' \dontrun{
-#' 
+#'
 #' future::plan(strategy = future::multisession, workers=2)
 #' fitty1p = kmbayes_parallel(nchains=2, y=y,Z=Z,X=X)
 #'

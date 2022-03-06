@@ -1,3 +1,14 @@
+# `bkmrhat` v1.1.2
+
+## Major changes
+- N/A
+
+## Minor changes
+- N/A
+
+## Bug fixes
+- Prompt to install dev version of bkmr (kmbayes_continue) mistakenly labeled updated versions of BKMR as outdated.
+
 # `bkmrhat` v1.1.1
 
 ## Major changes

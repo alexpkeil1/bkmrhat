@@ -27,7 +27,7 @@ y <- dat$y
 Z <- dat$Z
 X <- dat$X
 \dontrun{
-fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, tier=100)
+fitty1 = bkmr::kmbayes(y=y,Z=Z,X=X, est.h=TRUE, iter=100)
 # do some diagnostics here to see if 100 iterations (default) is enough
 # add 100 additional iterations (for illustration - still will not be enough)
 fitty2 = kmbayes_continue(fitty1, iter=100)
