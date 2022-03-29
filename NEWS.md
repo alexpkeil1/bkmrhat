@@ -4,7 +4,7 @@
 - N/A
 
 ## Minor changes
-- Minor version bump to please CRAN checks after removal due to a depency being removed
+- Minor version bump to please CRAN checks after removal due to a dependency being removed
 - Minor doc changes
 
 ## Bug fixes
