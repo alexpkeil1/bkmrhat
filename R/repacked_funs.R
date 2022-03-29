@@ -141,7 +141,7 @@ SingVarRiskSummaries_parallel <- function(x, ...){
 ExtractPIPs_parallel <- function(x, ...){
   #' Posterior inclusion probabilities by chain
   #' @param x bkmrfit.list object from \code{\link[bkmrhat]{kmbayes_parallel}}
-  #' @param ... arguments to \code{\link[bkmr]{CalcPIPs}}
+  #' @param ... arguments to \code{\link[bkmr]{ExtractPIPs}}
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr ExtractPIPs
@@ -156,7 +156,7 @@ ExtractPIPs_parallel <- function(x, ...){
     xii = x[[ii]]
     ff[[ii]] <- future({
       cat(paste("Chain", ii, "\n"))
-      df = suppressWarnings(data.frame(bkmr::ExtractPIPs(xii)))
+      df = suppressWarnings(data.frame(bkmr::ExtractPIPs(xii, ...)))
       df$chain=ii
       df
     }, seed=ss[ii])
@@ -169,7 +169,7 @@ ExtractPIPs_parallel <- function(x, ...){
 SamplePred_parallel <- function(x, ...){
   #' Posterior samples of E(Y|h(Z),X,beta) by chain
   #' @param x bkmrfit.list object from \code{\link[bkmrhat]{kmbayes_parallel}}
-  #' @param ... arguments to \code{\link[bkmr]{CalcPIPs}}
+  #' @param ... arguments to \code{\link[bkmr]{SamplePred}}
   #'
   #' @return data.frame with all chains together
   #' @importFrom bkmr SamplePred

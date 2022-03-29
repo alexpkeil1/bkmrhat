@@ -9,7 +9,7 @@ ExtractPIPs_parallel(x, ...)
 \arguments{
 \item{x}{bkmrfit.list object from \code{\link[bkmrhat]{kmbayes_parallel}}}
 
-\item{...}{arguments to \code{\link[bkmr]{CalcPIPs}}}
+\item{...}{arguments to \code{\link[bkmr]{ExtractPIPs}}}
 }
 \value{
 data.frame with all chains together

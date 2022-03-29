@@ -9,7 +9,7 @@ SamplePred_parallel(x, ...)
 \arguments{
 \item{x}{bkmrfit.list object from \code{\link[bkmrhat]{kmbayes_parallel}}}
 
-\item{...}{arguments to \code{\link[bkmr]{CalcPIPs}}}
+\item{...}{arguments to \code{\link[bkmr]{SamplePred}}}
 }
 \value{
 data.frame with all chains together
