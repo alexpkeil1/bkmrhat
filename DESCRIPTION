@@ -1,7 +1,7 @@
 Package: bkmrhat
 Title: Parallel Chain Tools for Bayesian Kernel Machine Regression
 Version: 1.1.2
-Date: 2022-03-07
+Date: 2022-03-29
 Authors@R: 
     person("Alexander", "Keil", , "akeil@unc.edu", role = c("aut", "cre"))
 Author: Alexander Keil [aut, cre]
