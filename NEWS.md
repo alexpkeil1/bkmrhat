@@ -4,7 +4,7 @@
 - N/A
 
 ## Minor changes
-- Modified description file
+- Modified description file (author, bugreports, url)
 
 ## Bug fixes
 - N/A

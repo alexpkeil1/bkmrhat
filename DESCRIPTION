@@ -3,9 +3,7 @@ Title: Parallel Chain Tools for Bayesian Kernel Machine Regression
 Version: 1.1.4
 Date: 2022-03-29
 Authors@R: 
-    person("Alexander", "Keil", , "akeil@unc.edu", role = c("aut", "cre"))
-Author: Alexander Keil [aut, cre]
-Maintainer: Alexander Keil <akeil@unc.edu>
+    person("Alexander", "Keil", , "alex.keil@nih.gov", role = c("aut", "cre"))
 Description: Bayesian kernel machine regression (from the 'bkmr' package)
     is a Bayesian semi-parametric generalized linear model approach under
     identity and probit links. There are a number of functions in this
@@ -35,4 +33,4 @@ VignetteBuilder:
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.3
