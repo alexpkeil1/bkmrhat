@@ -1,3 +1,15 @@
+# `bkmrhat` v1.1.4
+
+## Major changes
+- N/A
+
+## Minor changes
+- Modified description file
+
+## Bug fixes
+- N/A
+
+
 # `bkmrhat` v1.1.3
 
 ## Major changes
