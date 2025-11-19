@@ -1,4 +1,4 @@
-`bkmrhat` v1.1.5
+`bkmrhat` v1.1.7
 
 
 
