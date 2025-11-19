@@ -1,4 +1,4 @@
-# `bkmrhat` v1.1.4
+# `bkmrhat` v1.1.5
 
 ## Major changes
 - N/A
