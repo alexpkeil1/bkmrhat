@@ -6,3 +6,4 @@
 ^yaml
 ^CRAN-SUBMISSION$
 ^_private*
+^\.github$

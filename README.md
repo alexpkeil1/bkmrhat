@@ -1,5 +1,8 @@
-`bkmrhat` v1.1.7
+`bkmrhat` v1.1.8
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/alexpkeil1/bkmrhat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexpkeil1/bkmrhat/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 
 
